@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Setup script for MLSC
 # https://github.com/TobKra96/music_led_strip_control
@@ -7,6 +7,7 @@
 INST_DIR="/share" # Installation location
 PROJ_DIR="music_led_strip_control" # Project location
 PROJ_NAME="MLSC" # Project abbreviation
+VENV_NAME="venv" # Virtualenv name
 ASOUND_DIR="/etc/asound.conf" # Asound config location
 ALSA_DIR="/usr/share/alsa/alsa.conf" # Alsa config location
 SERVICE_DIR="/etc/systemd/system/mlsc.service" # MLSC systemd service location
@@ -103,18 +104,15 @@ echo
 
 # Update packages:
 prompt -i "\n[1/4] Updating and installing required packages..."
-sudo apt-get update -qq && apt-get upgrade -qqy
+sudo apt-get update -qq && sudo apt-get upgrade -qqy
 
 # Install required packages:
 # git: For cloning the MLSC repository.
 # libatlas-base-dev: Required for Numpy module.
 # portaudio19-dev: Audio drivers.
-sudo apt-get -y --no-install-recommends install git libatlas-base-dev portaudio19-dev python3 python3-dev python3-pip
+sudo apt-get -y --no-install-recommends install git libatlas-base-dev portaudio19-dev python3 python3-dev python3-pip python3-venv
 
-# Upgrade Pip to the latest version.
-sudo pip3 install --no-cache-dir --no-input --upgrade pip
 prompt -s "\nPackages updated and installed."
-
 
 # Install MLSC:
 prompt -i "\n[2/4] Installing $PROJ_NAME..."
@@ -122,6 +120,16 @@ if [[ ! -d $INST_DIR ]]; then
 	sudo mkdir $INST_DIR
 fi
 cd $INST_DIR
+
+# Create virtual environment in the installation directory.
+if [[ ! -d $VENV_NAME ]]; then
+	sudo python3 -m venv $VENV_NAME
+    prompt -s "\nVirtual environment ${VENV_NAME} created."
+fi
+
+# Upgrade Pip to the latest version.
+sudo ${VENV_NAME}/bin/pip3 install --no-cache-dir --no-input --upgrade pip
+
 
 if [[ -d $PROJ_DIR ]]; then
     confirm "${PROJ_NAME} is already installed. Do you want to reinstall it"
@@ -153,7 +161,7 @@ else
 fi
 
 # Install/update modules from requirements.txt.
-sudo pip3 install --no-cache-dir --no-input --upgrade -r ${PROJ_DIR}/requirements.txt
+sudo ${VENV_NAME}/bin/pip3 install --no-cache-dir --no-input --upgrade -r ${PROJ_DIR}/requirements.txt
 
 
 # Setup microphone:
@@ -210,7 +218,7 @@ After=network.target
 Type=simple
 User=root
 WorkingDirectory=${INST_DIR}/music_led_strip_control/server
-ExecStart=python3 main.py
+ExecStart=${INST_DIR}/${VENV_NAME}/bin/python3 main.py
 Restart=on-abnormal
 RestartSec=10
 KillMode=control-group
