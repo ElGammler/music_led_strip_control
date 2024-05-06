@@ -2,7 +2,7 @@ PyAudio==0.2.11
 numpy==1.21.0
 coloredlogs==15.0
 scipy==1.6.2
-Werkzeug==2.0.3
+Werkzeug==3.0.3
 Flask==2.0.3
 Flask_Login==0.5.0
 Jinja2==3.0.1
