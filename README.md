@@ -7,8 +7,8 @@
 </p>
 
 <p align="center">
-  <a style="text-decoration:none" href="https://www.python.org/downloads/release/python-3711/">
-    <img src="https://img.shields.io/badge/python-3.8+-blue.svg?color=3498DB&style=flat-square" alt="Python Version" />
+  <a style="text-decoration:none" href="https://www.python.org/downloads/release/python-3919/">
+    <img src="https://img.shields.io/badge/python-3.9+-blue.svg?color=3498DB&style=flat-square" alt="Python Version" />
   </a>
   <a style="text-decoration:none" href="https://discord.gg/bMmWYGcz/">
     <img src="https://img.shields.io/discord/774182494277992478?color=3498DB&style=flat-square&label=discord" alt="Discord" />
