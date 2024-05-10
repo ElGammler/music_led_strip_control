@@ -1,64 +1,57 @@
-#:schema https://raw.githubusercontent.com/astral-sh/ruff/main/ruff.schema.json
+output-format = "grouped"
 
-select = [
-    "ALL",
+line-length = 150
 
-    # Nursery (Not enabled by ALL selector):
-    "E111", "E112", "E113", "E114", "E115", "E116", "E117",
-    "E201", "E202", "E203",
-    "E211",
-    "E221", "E222", "E223", "E224", "E225", "E226", "E227", "E228",
-    "E231",
-    "E241", "E242",
-    "E251", "E252",
-    "E261", "E262", "E265", "E266",
-    "E271", "E272", "E273", "E274", "E275",
+target-version = "py39"
 
-    "RUF017",
+extend-exclude = ["unit_tests", "test"]
 
-    "PLC1901", "PLW1641", "PLW3201"
-]
+
+[lint]
+select = ["ALL"]
 
 ignore = [
-    "D1",       # undocumented-*
-    "COM812",   # missing-trailing-comma
-    "D203",     # one-blank-line-before-class (Incompatible with D211 no-blank-line-before-class)
-    "D213",     # multi-line-summary-second-line (Incompatible with D212 multi-line-summary-first-line)
-    "FBT",      # flake8-boolean-trap
-    "ERA001",   # commented-out-code
-    "TRY300",   # try-consider-else
-    "TD",       # flake8-todos
-    "FIX",      # flake8-fixme
-
-
-    "ANN001",   # missing-type-function-argument
-    "ANN002",   # missing-type-args
-    "ANN003",   # missing-type-kwargs
-    "ANN101",   # missing-type-self
-    "ANN201",   # missing-return-type-undocumented-public-function
-
-    "INP001",   # implicit-namespace-package
-
-    "S602",     # subprocess-popen-with-shell-equals-true
-    "S603",     # subprocess-without-shell-equals-true
-
-    "G004",     # logging-f-string
-
-    "PLR2004",  # magic-value-comparison
+    "ANN001",  # missing-type-function-argument
+    "ANN002",  # missing-type-args
+    "ANN003",  # missing-type-kwargs
+    "ANN101",  # missing-type-self
+    "ANN201",  # missing-return-type-undocumented-public-function
+    "ANN202",  # missing-return-type-private-function
+    "COM812",  # missing-trailing-comma
+    "CPY001",  # missing-copyright-notice
+    "D1",      # undocumented-*
+    "D203",    # one-blank-line-before-class (Incompatible with D211 no-blank-line-before-class)
+    "D213",    # multi-line-summary-second-line (Incompatible with D212 multi-line-summary-first-line)
+    "ERA001",  # commented-out-code
+    "FBT",     # flake8-boolean-trap
+    "FIX",     # flake8-fixme
+    "G004",    # logging-f-string
+    "INP001",  # implicit-namespace-package
+    "PLR2004", # magic-value-comparison
+    "RET503",  # implicit-return
+    "RUF029",  # unused-async
+    "S404",    # suspicious-subprocess-import
+    "S602",    # subprocess-popen-with-shell-equals-true
+    "S603",    # subprocess-without-shell-equals-true
+    "TD",      # flake8-todos
+    "TRY300",  # try-consider-else
+    "UP007",   # non-pep604-annotation
 ]
 
 unfixable = ["B", "UP", "C4", "SIM"]
 
-format = "grouped"
+preview = true
 
-pylint.max-args = 10
 
-pylint.max-returns = 10
+[format]
+quote-style = "double"
 
-line-length = 145
 
-flake8-quotes.inline-quotes = "double"
+[lint.flake8-quotes]
+inline-quotes = "double"
 
-target-version = "py38"
 
-extend-exclude = ["unit_tests", "test"]
+[lint.pylint]
+max-args = 10
+
+max-returns = 10
