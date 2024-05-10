@@ -1,15 +1,16 @@
-PyAudio==0.2.13
-numpy==1.25.0
+PyAudio==0.2.14
+numpy==1.26.4
 coloredlogs==15.0.1
-scipy==1.11.1
-Werkzeug==2.3.6
-Flask==2.3.2
-Flask_Login==0.6.2
-Jinja2==3.1.2
-waitress==2.1.2
-rpi_ws281x==5.0.0
-icmplib==3.0.3
-Flask-OpenAPI3-UI==1.6.0
-jsonschema==4.17.3
-APScheduler==3.10.1
+scipy==1.13.0
+Werkzeug==3.0.3
+Flask==3.0.3
+Flask_Login==0.6.3
+Jinja2==3.1.4
+waitress==3.0.0
+rpi_ws281x==5.0.0; sys_platform == "linux"
+rpi-ws281x-mock==0.2.2; sys_platform == "win32"
+icmplib==3.0.4
+Flask-OpenAPI3-UI==9.10.9
+jsonschema==4.22.0
+APScheduler==3.10.4
 psutil
