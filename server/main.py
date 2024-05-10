@@ -7,8 +7,8 @@
 import sys
 from sys import platform, version_info
 
-if version_info < (3, 8):
-    sys.exit("\033[91mError: MLSC requires Python 3.8 or greater.")
+if version_info < (3, 9):  # noqa: UP036
+    sys.exit("\033[91mError: MLSC requires Python 3.9 or greater.")
 
 import logging
 import subprocess
@@ -38,7 +38,10 @@ def instance_already_running():
     """
     lock_path = "../default.lock"
 
-    lock_file_pointer = os.open(lock_path, os.O_WRONLY | os.O_CREAT)
+    try:
+        lock_file_pointer = os.open(lock_path, os.O_WRONLY | os.O_CREAT)
+    except PermissionError:
+        sys.exit("\033[91mError: Run MLSC as root (sudo).")
 
     try:
         fcntl.lockf(lock_file_pointer, fcntl.LOCK_EX | fcntl.LOCK_NB)

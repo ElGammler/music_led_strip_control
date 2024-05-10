@@ -3,13 +3,19 @@ from __future__ import annotations
 import platform
 import re
 import subprocess
+from importlib.metadata import PackageNotFoundError, version
+from pathlib import Path
 
 import psutil
-from flask import __version__ as flask_version
 from icmplib import ping
 from libs.webserver.executer_base import ExecuterBase
 
 __version__ = "2.3 Dev"
+
+try:
+    flask_version = version("flask")
+except PackageNotFoundError:
+    flask_version = "Unknown"
 
 
 class BuildServiceInfo:
@@ -86,7 +92,7 @@ class SystemInfoExecuter(ExecuterBase):
 
     def get_raspi_temp(self: SystemInfoExecuter) -> dict:
         """Return system temperature."""
-        if platform.system() != "Linux":
+        if platform.system() != "Linux" or not Path("/usr/bin/vcgencmd").exists():
             return {
                 "raspi": {
                     "celsius": 0,
