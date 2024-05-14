@@ -152,7 +152,10 @@ class DeviceManager:
     def start_devices(self):
         for key, value in self._devices.items():
             self.logger.debug(f"Starting device: {key}")
-            value.start_device()
+            try:
+                value.start_device()
+            except TypeError:
+                self.logger.exception(f"Could not start device {key}.")
 
     def reload_config(self):
         self.logger.debug("Entering reload_config()")
