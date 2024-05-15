@@ -1,12 +1,10 @@
-import logging
-
 from libs.config_converter.config_converter_v2 import ConfigConverterV2  # pylint: disable=E0611, E0401
 from libs.config_converter.config_converter_v3 import ConfigConverterV3  # pylint: disable=E0611, E0401
 
 
 class ConfigConverterService:
     def __init__(self) -> None:
-        self.logger = logging.getLogger(__name__)
+        pass
 
     def upgrade(self, old_config):
         config_converter_v2 = ConfigConverterV2()

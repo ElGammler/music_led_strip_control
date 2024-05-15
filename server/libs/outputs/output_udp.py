@@ -1,7 +1,7 @@
-import logging
 import socket
 
 import numpy as np
+from loguru import logger
 
 from libs.outputs.output import Output  # pylint: disable=E0611, E0401
 
@@ -10,8 +10,6 @@ class OutputUDP(Output):
     def __init__(self, device) -> None:
         # Call the constructor of the base class.
         super().__init__(device)
-        self.logger = logging.getLogger(__name__)
-
         output_id = "output_udp"
 
         self._udp_client_ip = self._device_config["output"][output_id]["udp_client_ip"]
@@ -32,8 +30,8 @@ class OutputUDP(Output):
         try:
             self._sock.sendto(byte_array, (self._udp_client_ip, self._udp_client_port))
         except Exception as ex:
-            self.logger.exception("Could not send to client", ex)
-            self.logger.debug(f"Reinit output of {self._udp_client_ip}")
+            logger.exception(f"Could not send to client: {ex}")
+            logger.debug(f"Reinit output of {self._udp_client_ip}")
             self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def map_channels(self, output_array_in):

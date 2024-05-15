@@ -7,6 +7,7 @@ from libs.webserver.executer import Executer
 from libs.webserver.executer_base import validate_schema
 from libs.webserver.messages import ConfigFileImported, ConfigFileNotFound, InvalidConfigFile, UnprocessableEntity, UnsupportedMediaType
 from libs.webserver.schemas.general_settings_api_schema import ONE_GENERAL_SETTING_SCHEMA, SET_GENERAL_SETTINGS_SCHEMA
+from loguru import logger
 
 general_settings_api = Blueprint("general_settings_api", __name__)
 
@@ -62,7 +63,7 @@ def reset_general_settings():  # pylint: disable=E0211
 @login_required
 @swag_from("docs/general_settings_api/export_config.yml")
 def export_config():  # pylint: disable=E0211
-    Executer.instance.logger.debug(f"Send file: {Executer.instance.general_settings_executer.export_config_path}")
+    logger.debug(f"Send file: {Executer.instance.general_settings_executer.export_config_path}")
     return send_file(
         Executer.instance.general_settings_executer.export_config_path,
         as_attachment=True,
@@ -75,17 +76,17 @@ def export_config():  # pylint: disable=E0211
 @login_required
 @swag_from("docs/general_settings_api/import_config.yml")
 def import_config():  # pylint: disable=E0211
-    Executer.instance.logger.debug("Import Config Request received.")
+    logger.debug("Import Config Request received.")
 
     if "imported_config" not in request.files:
-        Executer.instance.logger.error("Could not find the file key.")
+        logger.error("Could not find the file key.")
         return ConfigFileNotFound.as_response()
 
     imported_config = request.files["imported_config"]
     content = imported_config.read()
     if content:
         try:
-            Executer.instance.logger.debug(f"File Received: {dumps(loads(content), indent=4)}")
+            logger.debug(f"File Received: {dumps(loads(content), indent=4)}")
             if Executer.instance.general_settings_executer.import_config(loads(content)):
                 return ConfigFileImported.as_response()
             return InvalidConfigFile.as_response()

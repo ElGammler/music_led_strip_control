@@ -1,19 +1,18 @@
 import json
-import logging
 import os
+
+from loguru import logger
 
 from libs.config_converter.config_converter_base import ConfigConverterBase  # pylint: disable=E0611, E0401
 
 
 class ConfigConverterV2(ConfigConverterBase):
     def __init__(self) -> None:
-        self.logger = logging.getLogger(__name__)
-
         self.from_version = 1
         self.to_version = 2
 
     def upgrade(self, old_config):
-        self.logger.info("Upgrade config to version 2.")
+        logger.info("Upgrade config to version 2.")
         rel_config_path = "../../.mlsc/"
         config_folder = os.path.abspath(rel_config_path) + "/"
         tmp_convert_file_path = config_folder + "tmp_config_convert.json"
@@ -35,35 +34,35 @@ class ConfigConverterV2(ConfigConverterBase):
 
         new_config["version"] = 2
 
-        self.logger.info("Config upgraded to version 2.")
+        logger.info("Config upgraded to version 2.")
         return new_config
 
     def save_tmp_json(self, old_config, tmp_convert_file_path):
         try:
-            self.logger.debug("Save tmp config file.")
+            logger.debug("Save tmp config file.")
             # Write tmp file
             with open(tmp_convert_file_path, "w") as write_file:
                 json.dump(old_config, write_file, indent=4, sort_keys=True)
 
         except Exception as e:
-            self.logger.exception("Exception while saving the tmp file.", e)
+            logger.exception(f"Exception while saving the tmp file: {e}")
 
     def delete_tmp_json(self, tmp_convert_file_path):
         try:
-            self.logger.debug("Delete tmp config file.")
+            logger.debug("Delete tmp config file.")
             # Search and delete tmp file
             if os.path.exists(tmp_convert_file_path):
                 os.remove(tmp_convert_file_path)
         except Exception as e:
-            self.logger.exception("Exception while delete the tmp file.", e)
+            logger.exception(f"Exception while delete the tmp file: {e}")
 
     def read_tmp_json(self, tmp_convert_file_path):
         try:
-            self.logger.debug("Read tmp config file.")
+            logger.debug("Read tmp config file.")
             with open(tmp_convert_file_path, "r") as read_file:
                 return json.load(read_file)
         except Exception as e:
-            self.logger.exception("Exception while read the tmp file.", e)
+            logger.exception(f"Exception while read the tmp file: {e}")
 
     def dict_to_json_string(self, old_config_dict):
         return json.dumps(old_config_dict)

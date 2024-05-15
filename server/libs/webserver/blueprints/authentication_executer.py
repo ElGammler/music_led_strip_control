@@ -10,6 +10,7 @@ from urllib.parse import urljoin, urlparse
 from flask import Flask, Response, redirect, request, session, url_for
 from flask_login import LoginManager, UserMixin, login_user
 from libs.webserver.executer_base import ExecuterBase
+from loguru import logger
 
 login_manager = LoginManager()
 
@@ -64,7 +65,7 @@ class AuthenticationExecuter(ExecuterBase):
         self.IS_PIN_ACTIVE: bool = self.config_values["USE_PIN_LOCK"]
 
     def add_server_authentication(self, server: Flask) -> Flask:
-        self.logger.debug("Enter add_server_authentication()")
+        logger.debug("Enter add_server_authentication()")
 
         if not self.validate_pin(self.USER_PIN) and self.IS_PIN_ACTIVE:
             msg = "PIN must be from 4 to 8 digits."
@@ -81,35 +82,35 @@ class AuthenticationExecuter(ExecuterBase):
 
     def save_config(self) -> None:
         """Save PIN config to file."""
-        self.logger.debug("Saving PIN to file...")
+        logger.debug("Saving PIN to file...")
         with open(self.config_path, "w") as configfile:
             self.config.write(configfile)
             if platform.system().lower() == "linux":
                 chmod(self.config_path, 775)
-        self.logger.debug("Pin saved to file.")
+        logger.debug("Pin saved to file.")
 
     def reset_config(self) -> None:
         """Reset the PIN config file to default values."""
-        self.logger.debug("Resetting PIN...")
+        logger.debug("Resetting PIN...")
         for section in self.config.sections():
             self.config.remove_section(section)
         self.config["SECURITY"] = deepcopy(self.default_values)
         self.save_config()
-        self.logger.debug("PIN reset.")
+        logger.debug("PIN reset.")
 
     def read_config(self) -> PinConfig:
         """Read PIN settings from config file. Check if .ini file exists and if security options are valid."""
         default_values = deepcopy(self.default_values)
         try:
-            self.logger.debug("Reading PIN config...")
+            logger.debug("Reading PIN config...")
             dataset = self.config.read(self.config_path)
-            self.logger.debug("PIN config read.")
+            logger.debug("PIN config read.")
         except (ParsingError, MissingSectionHeaderError) as e:
-            self.logger.debug(f"Reading PIN failed: {e}")
+            logger.debug(f"Reading PIN failed: {e}")
             self.reset_config()
             dataset = self.config.read(self.config_path)
 
-        self.logger.debug(f"PIN config: {self.config}, dataset: {dataset}")
+        logger.debug(f"PIN config: {self.config}, dataset: {dataset}")
 
         if self.config_path in dataset:
             try:
@@ -119,13 +120,13 @@ class AuthenticationExecuter(ExecuterBase):
                 }
                 return new_values
             except (ValueError, KeyError) as e:
-                self.logger.debug(f"PIN dataset failed: {e}")
+                logger.debug(f"PIN dataset failed: {e}")
                 self.reset_config()
                 return default_values
         else:
-            self.logger.debug("PIN file is not in dataset.")
+            logger.debug("PIN file is not in dataset.")
             self.reset_config()
-        self.logger.debug("PIN read from file.")
+        logger.debug("PIN read from file.")
         return default_values
 
     def validate_pin(self, pin: str) -> bool:
@@ -140,29 +141,29 @@ class AuthenticationExecuter(ExecuterBase):
 
     def set_pin_setting(self, data: PinConfig) -> None:
         """Interface to set PIN settings from API."""
-        self.logger.debug("Enter set_pin_setting()")
+        logger.debug("Enter set_pin_setting()")
         self.config["SECURITY"] = data
         self.save_config()
 
     def get_pin_setting(self) -> PinConfig:
         """Interface to get PIN settings from API."""
-        self.logger.debug("Enter get_pin_setting()")
+        logger.debug("Enter get_pin_setting()")
         return self.read_config()
 
     def reset_pin_settings(self) -> PinConfig:
         """Interface to reset PIN settings from API."""
-        self.logger.debug("Enter reset_pin_settings()")
+        logger.debug("Enter reset_pin_settings()")
         self.reset_config()
         return self.read_config()
 
     def login(self) -> None:
         """Log in the user."""
-        self.logger.debug("Enter login()")
+        logger.debug("Enter login()")
         user_id = "1001"
         user = User(user_id)
         login_user(user)
 
     def is_pin_active(self) -> bool:
         """Check if PIN is active."""
-        self.logger.debug("Enter is_pin_active()")
+        logger.debug("Enter is_pin_active()")
         return self.IS_PIN_ACTIVE

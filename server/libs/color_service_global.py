@@ -1,13 +1,11 @@
-import logging
 from time import time
 
 import numpy as np
+from loguru import logger
 
 
 class ColorServiceGlobal:
     def __init__(self, config) -> None:
-        self.logger = logging.getLogger(__name__)
-
         self._config = config
         device_config = {}
         if len(self._config["device_configs"].keys()) > 0:
@@ -105,7 +103,7 @@ class ColorServiceGlobal:
         """
         if colour in self._config["colors"]:
             return self._config["colors"][colour]
-        self.logger.error(f"Color '{colour}' has not been defined.")
+        logger.error(f"Color '{colour}' has not been defined.")
         return (0, 0, 0)
 
     def get_global_fade_color(self, fade_speed, fade_gradient, fade_reverse):

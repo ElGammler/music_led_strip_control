@@ -1,4 +1,4 @@
-import logging
+from loguru import logger
 
 from libs.config_converter.config_converter_base import ConfigConverterBase  # pylint: disable=E0611, E0401
 
@@ -7,14 +7,12 @@ class ConfigConverterV3(ConfigConverterBase):
     """Config V3 updates the format used for groups (`list` -> `dict`)."""
 
     def __init__(self) -> None:
-        self.logger = logging.getLogger(__name__)
-
         self.from_version = 2
         self.to_version = 3
 
     def upgrade(self, old_config: dict) -> dict:
         """Upgrade config from version 2 to version 3. Run all upgrade steps."""
-        self.logger.info("Upgrade config to version 3.")
+        logger.info("Upgrade config to version 3.")
 
         upgrade_step_1 = self.format_global_groups(old_config)
         upgrade_step_2 = self.format_device_groups(upgrade_step_1)
@@ -23,7 +21,7 @@ class ConfigConverterV3(ConfigConverterBase):
         new_config = upgrade_step_3
         new_config["version"] = 3
 
-        self.logger.info("Config upgraded to version 3.")
+        logger.info("Config upgraded to version 3.")
         return new_config
 
     def format_global_groups(self, old_config: dict) -> dict:

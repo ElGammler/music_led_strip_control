@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from libs.webserver.executer_base import ExecuterBase, update
+from loguru import logger
 
 if TYPE_CHECKING:
     from libs.webserver.messages import BadRequest, NotFound
@@ -54,15 +55,15 @@ class GeneralSettingsExecuter(ExecuterBase):
     def import_config(self, imported_config: dict) -> bool:
         """Import a new config and load it."""
         if imported_config is None:
-            self.logger.error("Could not import Config. Config is None.")
+            logger.error("Could not import Config. Config is None.")
             return False
 
-        self.logger.debug(f"Type of imported config: {type(imported_config)}")
+        logger.debug(f"Type of imported config: {type(imported_config)}")
         if isinstance(imported_config, dict):
             self._config = imported_config
             self.save_config()
             self._config_instance.check_compatibility()
             self.refresh_device(self.all_devices_id)
             return True
-        self.logger.error("Unknown Type.")
+        logger.error("Unknown Type.")
         return False

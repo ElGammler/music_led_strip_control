@@ -15,8 +15,7 @@ def load_config_template():
     configtemplate_file = libs_folder + "config_template.json"
 
     if not os.path.exists(configtemplate_file):
-        raise Exception(
-            f'Could not find the template config file: "{configtemplate_file}"')
+        raise Exception(f'Could not find the template config file: "{configtemplate_file}"')
 
     # Read the Backup Config.
     with open(configtemplate_file, "r") as read_file:

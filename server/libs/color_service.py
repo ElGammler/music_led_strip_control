@@ -1,13 +1,10 @@
-import logging
-
 import numpy as np
+from loguru import logger
 from scipy.ndimage import gaussian_filter1d
 
 
 class ColorService:
     def __init__(self, config, device_config) -> None:
-        self.logger = logging.getLogger(__name__)
-
         self._config = config
         self._device_config = device_config
         self.full_gradients = {}
@@ -106,7 +103,7 @@ class ColorService:
         """
         if colour in self._config["colors"]:
             return self._config["colors"][colour]
-        self.logger.error(f"Color '{colour}' has not been defined.")
+        logger.error(f"Color '{colour}' has not been defined.")
         return (0, 0, 0)
 
     def build_slidearrays(self):

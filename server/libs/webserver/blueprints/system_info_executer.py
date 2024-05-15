@@ -9,6 +9,7 @@ from pathlib import Path
 import psutil
 from icmplib import ping
 from libs.webserver.executer_base import ExecuterBase
+from loguru import logger
 
 __version__ = "2.3 Dev"
 
@@ -144,7 +145,7 @@ class SystemInfoExecuter(ExecuterBase):
                 service_info.update(not_found=True)
             service_info.update(running=False)
         except Exception:  # noqa: BLE001
-            self.logger.debug(f"Could not get service status: {service_name}")
+            logger.debug(f"Could not get service status: {service_name}")
 
         return service_info.as_dict()
 
@@ -163,7 +164,7 @@ class SystemInfoExecuter(ExecuterBase):
                 else:
                     current_device["connected"] = True
             except Exception:
-                self.logger.exception(f"Could not get device status of: {current_device['name']} - {current_device['id']}")
+                logger.exception(f"Could not get device status of: {current_device['name']} - {current_device['id']}")
                 current_device["connected"] = False
 
             devices.append(current_device)

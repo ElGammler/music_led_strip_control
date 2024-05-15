@@ -1,6 +1,6 @@
 PyAudio==0.2.14
 numpy==1.26.4
-coloredlogs==15.0.1
+loguru==0.7.2
 scipy==1.13.0
 Werkzeug==3.0.3
 Flask==3.0.3

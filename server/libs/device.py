@@ -1,5 +1,6 @@
-import logging
 from multiprocessing import Process, Queue
+
+from loguru import logger
 
 from libs.effect_service import EffectService
 from libs.output_service import OutputService
@@ -8,8 +9,6 @@ from libs.queue_wrapper import QueueWrapper  # pylint: disable=E0611, E0401
 
 class Device:
     def __init__(self, config, device_config, color_service_global) -> None:
-        self.logger = logging.getLogger(__name__)
-
         self.__config = config
         self.__device_config = device_config
         self.__color_service_global = color_service_global
@@ -18,16 +17,17 @@ class Device:
         self.create_processes()
 
     def start_device(self):
-        self.logger.info(
-            f'Starting device: {self.__device_config["device_name"]}')
+        logger.info(f'Starting device: {self.__device_config["device_name"]}')
         self.__output_process.start()
         self.__effect_process.start()
 
     def stop_device(self):
-        self.logger.info(
-            f'Stopping device: {self.__device_config["device_name"]}')
-        self.__effect_process.terminate()
-        self.__output_process.terminate()
+        logger.info(f'Stopping device: {self.__device_config["device_name"]}')
+        try:
+            self.__effect_process.terminate()
+            self.__output_process.terminate()
+        except AttributeError:
+            pass
 
     def create_processes(self):
         self.__output_service = OutputService()
@@ -50,8 +50,7 @@ class Device:
         self.__output_queue = QueueWrapper(Queue(2))
 
     def refresh_config(self, config, device_config):
-        self.logger.info(
-            f'Refreshing config of device: {self.__device_config["device_name"]}')
+        logger.info(f'Refreshing config of device: {self.__device_config["device_name"]}')
 
         self.stop_device()
 

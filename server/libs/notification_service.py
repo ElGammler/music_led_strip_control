@@ -1,6 +1,7 @@
-import logging
 import sys
 from time import sleep
+
+from loguru import logger
 
 from libs.notification_enum import NotificationEnum  # pylint: disable=E0611, E0401
 from libs.notification_item import NotificationItem  # pylint: disable=E0611, E0401
@@ -12,7 +13,6 @@ class NotificationService:
               notification_queue_device_manager_out, notification_queue_audio_in,
               notification_queue_audio_out, notification_queue_webserver_in,
               notification_queue_webserver_out):
-        self.logger = logging.getLogger(__name__)
 
         self._config_lock = config_lock
         self._notification_queue_device_manager_in = QueueWrapper(
@@ -32,7 +32,7 @@ class NotificationService:
             NotificationEnum.config_refresh, "all_devices")
 
         self._cancel_token = False
-        self.logger.debug("NotificationService component started.")
+        logger.debug("NotificationService component started.")
 
         try:
             while not self._cancel_token:
@@ -42,16 +42,15 @@ class NotificationService:
                 sleep(0.5)
 
                 if not self._notification_queue_webserver_out.empty():
-                    self.logger.debug(
-                        "NotificationService: New Notification detected.")
+                    logger.debug("NotificationService: New Notification detected.")
                     self._current_notification_item = self._notification_queue_webserver_out.get_blocking()
 
-                    self.logger.debug("Item get")
+                    logger.debug("Item get")
                     if self._current_notification_item.notification_enum is NotificationEnum.config_refresh:
 
-                        self.logger.debug("Reloading config...")
+                        logger.debug("Reloading config...")
                         self.config_refresh(self._current_notification_item)
-                        self.logger.debug("Config reloaded.")
+                        logger.debug("Config reloaded.")
 
         except KeyboardInterrupt:
             sys.exit()
@@ -68,14 +67,14 @@ class NotificationService:
         # 3. Wait for all to finish the process.
         # 4. Continue the processes.
 
-        self.logger.debug("1. Pause")
+        logger.debug("1. Pause")
         # 1. Pause every process that has to refresh the config.
         self._notification_queue_device_manager_in.put_blocking(
             NotificationItem(NotificationEnum.process_pause, device_id))
         self._notification_queue_audio_in.put_blocking(
             NotificationItem(NotificationEnum.process_pause, device_id))
 
-        self.logger.debug("2. Refresh")
+        logger.debug("2. Refresh")
         # 2. Send the refresh command.
         self._notification_queue_device_manager_in.put_blocking(
             NotificationItem(NotificationEnum.config_refresh, device_id))
@@ -85,7 +84,7 @@ class NotificationService:
         # 3. Wait for all to finish the process.
         processes_not_ready = True
 
-        self.logger.debug("3. Wait")
+        logger.debug("3. Wait")
         device_ready = False
         effect_ready = False
         while processes_not_ready:
@@ -95,14 +94,14 @@ class NotificationService:
                 current_output_out = self._notification_queue_device_manager_out.get_blocking()
                 if current_output_out.notification_enum is NotificationEnum.config_refresh_finished:
                     device_ready = True
-                    self.logger.debug("Device refreshed the config.")
+                    logger.debug("Device refreshed the config.")
 
             # Check the notification queue of audio, if it is ready to continue.
             if (not self._notification_queue_audio_out.empty()):
                 current_effects_out = self._notification_queue_audio_out.get_blocking()
                 if current_effects_out.notification_enum is NotificationEnum.config_refresh_finished:
                     effect_ready = True
-                    self.logger.debug("Audio refreshed the config.")
+                    logger.debug("Audio refreshed the config.")
 
             if device_ready and effect_ready:
                 processes_not_ready = False

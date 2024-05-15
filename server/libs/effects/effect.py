@@ -16,7 +16,7 @@ class Effect:
         # Initial config load.
         self._config = self._device.config
         self._config_colours = self._config["colors"]
-        self._config_gradients = self._config["gradients"]
+        self._config_gradients = {}
 
         self._device_config = self._device.device_config
         self._output_queue = self._device.output_queue

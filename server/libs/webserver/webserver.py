@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 from time import sleep
 
 from flask_openapi import Swagger
@@ -24,8 +23,6 @@ DEBUG = False
 
 class Webserver:
     def start(self: Webserver, config_lock, notification_queue_in, notification_queue_out, effects_queue, py_audio) -> None:
-        self.logger = logging.getLogger(__name__)
-
         self._config_lock = config_lock
         self.notification_queue_in = notification_queue_in
         self.notification_queue_out = notification_queue_out
@@ -154,6 +151,5 @@ class Webserver:
             self.server.run(host="0.0.0.0", port=webserver_port, load_dotenv=False, debug=True)  # noqa: S104
         else:
             serve(self.server, host="0.0.0.0", port=webserver_port, threads=8, clear_untrusted_proxy_headers=False)  # noqa: S104
-
         while True:
             sleep(10)

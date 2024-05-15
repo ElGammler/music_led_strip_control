@@ -10,7 +10,6 @@ from sys import platform, version_info
 if version_info < (3, 9):  # noqa: UP036
     sys.exit("\033[91mError: MLSC requires Python 3.9 or greater.")
 
-import logging
 import subprocess
 from multiprocessing import Lock, Process, Queue
 from time import sleep
@@ -21,6 +20,7 @@ from libs.config_service import ConfigService
 from libs.device_manager import DeviceManager
 from libs.notification_service import NotificationService
 from libs.webserver.webserver import Webserver
+from loguru import logger
 
 if platform == "linux":
     import fcntl
@@ -81,8 +81,7 @@ class Main:
         self._config_instance = ConfigService.instance(self._config_lock)
         self._config = self._config_instance.config
 
-        self.logger = logging.getLogger(__name__)
-        self.logger.info("Initializing MLSC...")
+        logger.info("Initializing MLSC...")
 
         # Check config compatibility
         self._config_instance.check_compatibility()
@@ -114,7 +113,7 @@ class Main:
                 self._notification_queue_device_manager_in,
                 self._notification_queue_device_manager_out,
                 self._effects_queue,
-                self._audio_queue,
+                self._audio_queue
             ))
         self._device_manager_process.start()
 
@@ -129,7 +128,7 @@ class Main:
                 self._notification_queue_audio_in,
                 self._notification_queue_audio_out,
                 self._notification_queue_webserver_in,
-                self._notification_queue_webserver_out,
+                self._notification_queue_webserver_out
             ))
         self._notification_service_process.start()
 
@@ -159,10 +158,10 @@ class Main:
             ))
         self._audio_process.start()
 
-        self.logger.info("Initialization finished.")
+        logger.info("Initialization finished.")
 
         try:
-            self.logger.info("MLSC started...")
+            logger.info("MLSC started...")
 
             self._cancel_token = False
 
@@ -171,10 +170,10 @@ class Main:
                 sleep(10)
 
         except KeyboardInterrupt:
-            self.logger.info("Stopping MLSC...")
+            logger.info("Stopping MLSC...")
             self._notification_service_process.terminate()
             self._webserver_process.terminate()
-            self.logger.info("MLSC stopped")
+            logger.info("MLSC stopped")
 
 
 if __name__ == "__main__":

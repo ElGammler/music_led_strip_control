@@ -1,10 +1,10 @@
-import logging
-from multiprocessing import Queue
+import queue
+
+from loguru import logger
 
 
 class QueueWrapper:
     def __init__(self, queue) -> None:
-        self.logger = logging.getLogger(__name__)
         self.queue = queue
 
     def put_blocking(self, element):
@@ -19,10 +19,11 @@ class QueueWrapper:
         return self.queue.get(block=True)
 
     def get_blocking_with_timeout(self):
+        # return self.queue.get(block=True, timeout=1)
         try:
             return self.queue.get(block=True, timeout=1)
-        except Exception as e:
-            self.logger.debug(f"Could not get item from queue: {str(e)}")
+        except queue.Empty:
+            logger.debug("Could not get item from queue, queue is empty.")
             return None
 
     def get_none_blocking(self):
@@ -39,4 +40,4 @@ class QueueWrapper:
             delete_element = self.get_none_blocking()
             del delete_element
         except Exception as e:
-            self.logger.debug(f"Could not delete element from queue: {str(e)}")
+            logger.debug(f"Could not delete element from queue: {e}")

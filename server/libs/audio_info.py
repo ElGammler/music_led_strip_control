@@ -1,11 +1,11 @@
-import logging
+
+from loguru import logger
 
 from libs.audio_device import AudioDevice  # pylint: disable=E0611, E0401
 
 
 class AudioInfo:
     def get_audio_devices(py_audio):
-        logger = logging.getLogger(__name__)
         logger.debug("Get audio devices.")
         audio_devices = []
 
@@ -24,8 +24,8 @@ class AudioInfo:
             except Exception:
                 logger.exception("Unexpected error in AudioInfo.")
 
-        except OSError:
-            logger.exception("OS error.")
+        except OSError as e:
+            logger.error(f"OS error: {e}")
         except Exception:
             logger.exception("Unexpected error in AudioInfo.")
 
@@ -33,16 +33,15 @@ class AudioInfo:
         return audio_devices
 
     def get_default_audio_device(py_audio):
-        logger = logging.getLogger(__name__)
         default_device = AudioDevice(0, "Error", 44100)
         try:
             raw_default_device = py_audio.get_default_input_device_info()
             default_device = AudioInfo.parse_raw_audio_device_to_audio_device(raw_default_device)
 
-        except OSError:
-            logger.exception("OS error.")
+        except OSError as e:
+            logger.error(f"OS error: {e}")
         except Exception:
-            logger.exception("Unexpected error in AudioInfo get_default_audio_device.")
+            logger.error("Unexpected error in AudioInfo get_default_audio_device.")
 
         return default_device
 

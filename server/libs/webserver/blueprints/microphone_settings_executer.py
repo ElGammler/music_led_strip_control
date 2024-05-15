@@ -3,6 +3,7 @@ import subprocess
 from sys import platform
 
 from libs.webserver.executer_base import ExecuterBase
+from loguru import logger
 
 
 class MicrophoneSettingsExecuter(ExecuterBase):
@@ -23,9 +24,9 @@ class MicrophoneSettingsExecuter(ExecuterBase):
             result["level"] = self.get_level_form_output(result["output"])
 
         except Exception:
-            self.logger.exception("Unknown error.")
+            logger.exception("Unknown error.")
             if platform == "linux":
-                self.logger.exception("Exeception during mic level down.")
+                logger.exception("Exeception during mic level down.")
             result["level"] = 0
             result["output"] = ""
             result["error"] = "Could not change set mic volume."
@@ -49,7 +50,7 @@ class MicrophoneSettingsExecuter(ExecuterBase):
             result["returncode"] = process.returncode
 
         except Exception:
-            self.logger.exception("Exeception during mic level up.")
+            logger.exception("Exeception during mic level up.")
             result["output"] = ""
             result["error"] = "Could not change set mic volume."
             result["returncode"] = 1
@@ -67,6 +68,6 @@ class MicrophoneSettingsExecuter(ExecuterBase):
         try:
             level = int(x.group(1))
         except Exception:
-            self.logger.exception("Could not get mic level.")
+            logger.exception("Could not get mic level.")
 
         return level

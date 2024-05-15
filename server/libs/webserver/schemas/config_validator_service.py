@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import logging
-
 from jsonschema import Draft202012Validator, validate  # noqa: F401
 from libs.webserver.schemas.custom_types import _valid_device_id, _valid_group_id, valid_name_type
+from loguru import logger
 
 # Enums
 effect_enum = [
@@ -1924,7 +1923,6 @@ schema = {
 class ConfigValidatorService:
     def __init__(self: ConfigValidatorService) -> None:
         self.schema = self._get_schema()
-        self.logger = logging.getLogger(__name__)
 
     def _get_schema(self: ConfigValidatorService) -> dict:
         return schema
@@ -1933,7 +1931,7 @@ class ConfigValidatorService:
         v = Draft202012Validator(self.schema, format_checker=Draft202012Validator.FORMAT_CHECKER)
         errors = sorted(v.iter_errors(config), key=lambda e: e.path)
         for e in errors:
-            self.logger.error(f"\nError text: {e.message}.\nError path: {e.json_path}\n")
+            logger.error(f"\nError text: {e.message}.\nError path: {e.json_path}\n")
 
         # Validate will raise exception if given json is not
         # what is described in schema.

@@ -1,6 +1,5 @@
-import logging
-
 import numpy as np
+from loguru import logger
 
 from libs.outputs.output import Output  # pylint: disable=E0611, E0401
 
@@ -9,7 +8,6 @@ class OutputRaspi(Output):
     def __init__(self, device) -> None:
         # Call the constructor of the base class.
         super().__init__(device)
-        self.logger = logging.getLogger(__name__)
 
         try:
             import _rpi_ws281x as ws  # pylint: disable=import-error
@@ -55,14 +53,14 @@ class OutputRaspi(Output):
             led_strip = self._led_strip_mapper[self._led_strip]
             if led_strip is not None:
                 self._led_strip_translated = led_strip
-                self.logger.debug(f"Found Led Strip {self._led_strip}")
+                logger.debug(f"Found Led Strip {self._led_strip}")
         except Exception as e:
-            self.logger.exception(f"Could not find LED Strip Type. Exception: {str(e)}")
+            logger.exception(f"Could not find LED Strip Type. Exception: {str(e)}")
 
         self._led_brightness_translated = int(255 * (self._led_brightness / 100))
 
-        self.logger.debug(f"LED Brightness: {self._led_brightness}")
-        self.logger.debug(f"LED Brightness converted: {self._led_brightness_translated}")
+        logger.debug(f"LED Brightness: {self._led_brightness}")
+        logger.debug(f"LED Brightness converted: {self._led_brightness_translated}")
 
         self._leds = ws.new_ws2811_t()
 

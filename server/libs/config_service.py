@@ -5,15 +5,13 @@
 from __future__ import annotations
 
 import json
-import logging
 import os
 import sys
-from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from shutil import copy, copyfile
 
-import coloredlogs
 from jsonschema.exceptions import ValidationError
+from loguru import logger
 
 from libs.config_converter.config_converter_service import ConfigConverterService  # pylint: disable=E0611, E0401
 from libs.webserver.schemas.config_validator_service import ConfigValidatorService  # pylint: disable=E0611, E0401
@@ -25,8 +23,6 @@ class ConfigService:
 
         # Start with the default logging settings, because the config was not loaded.
         self.setup_logging()
-
-        self.logger = logging.getLogger(__name__)
 
         self.config_validator_service = ConfigValidatorService()
 
@@ -43,10 +39,10 @@ class ConfigService:
         self._backup_path = config_folder + config_backup_file
         self._template_path = lib_folder + config_template_file
 
-        self.logger.debug("Config Files")
-        self.logger.debug(f"Config: {self._config_path}")
-        self.logger.debug(f"Backup: {self._backup_path}")
-        self.logger.debug(f"Template: {self._template_path}")
+        logger.debug("Config Files")
+        logger.debug(f"Config: {self._config_path}")
+        logger.debug(f"Backup: {self._backup_path}")
+        logger.debug(f"Template: {self._template_path}")
 
         if not os.path.exists(self._config_path):
             if not os.path.exists(self._backup_path):
@@ -73,16 +69,16 @@ class ConfigService:
             with open(self._config_path, "r") as read_file:
                 self.config = json.load(read_file)
         except Exception as e:
-            self.logger.error(f"Could not load config due to exception: {e}")
+            logger.error(f"Could not load config due to exception: {e}")
             self.load_backup()
 
         self.config_lock.release()
 
-        self.logger.debug("Settings loaded from config.")
+        logger.debug("Settings loaded from config.")
 
     def save_config(self, config=None):
         """Save the config file. Use the current self.config."""
-        self.logger.debug("Saving settings...")
+        logger.debug("Saving settings...")
 
         self.config_lock.acquire()
 
@@ -103,14 +99,14 @@ class ConfigService:
             with open(self._backup_path, "r") as read_file:
                 self.config = json.load(read_file)
         except Exception as e:
-            self.logger.error(f"Could not load backup config due to exception: {e}")
+            logger.error(f"Could not load backup config due to exception: {e}")
 
     def save_backup(self):
         copy(self._config_path, self._backup_path)
 
     def reset_config(self):
         """Reset the config."""
-        self.logger.debug("Resetting config...")
+        logger.debug("Resetting config...")
 
         self.config_lock.acquire()
 
@@ -164,7 +160,7 @@ class ConfigService:
         except ValidationError as e:
             # Todo: Handle validation errors.
             # https://python-jsonschema.readthedocs.io/en/stable/errors/
-            self.logger.error(f"Could not validate config settings: {e}")
+            logger.error(f"Could not validate config settings: {e}")
             # self.load_backup()
 
         self.save_config()
@@ -186,55 +182,49 @@ class ConfigService:
         return self._config_path
 
     def setup_logging(self):
-        logging_path = "../../.mlsc/"
-        logging_file = "mlsc.log"
+        """Set up Loguru logging."""
+        # Loguru on Windows (for testing) does not support multiprocessing well because of spawning instead of forking.
+        # Loggers inside child processes will ignore any custom configuration like log levels and use the default config.
+        logging_path = Path("../../.mlsc/")
+        logging_file = Path("mlsc.log")
 
-        format_string_file = "%(asctime)s - %(levelname)-8s - %(name)-30s - %(message)s"
-        format_string_console = "%(levelname)-8s - %(name)-30s - %(message)s"
-
-        logging_level_root = logging.NOTSET
-        logging_level_console = logging.INFO
-        logging_level_file = logging.INFO
-        logging_file_enabled = False
+        format_string_file = "{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | {name}:{function}:{line} - {message}"
+        format_string_console = "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
 
         logging_level_map = {
-            "notset": logging.NOTSET,
-            "debug": logging.DEBUG,
-            "info": logging.INFO,
-            "warning": logging.WARNING,
-            "error": logging.ERROR,
-            "critical": logging.CRITICAL
+            "notset": "TRACE",
+            "debug": "DEBUG",
+            "info": "INFO",
+            "warning": "WARNING",
+            "error": "ERROR",
+            "critical": "CRITICAL"
         }
+
+        logging_level_console = "INFO"
+        logging_level_file = "INFO"
+        logging_file_enabled = False
 
         if self.config is not None:
             try:
                 logging_level_console = logging_level_map[self.config["general_settings"]["log_level_console"]]
                 logging_level_file = logging_level_map[self.config["general_settings"]["log_level_file"]]
                 logging_file_enabled = self.config["general_settings"]["log_file_enabled"]
-            except Exception as e:
-                print(f"Could not load logging settings. Exception {e}")
+            except KeyError as e:
+                print(f"Could not load logging settings. Key does not exist: {e}")  # noqa: T201
 
-        if not os.path.exists(logging_path):
-            Path(logging_path).mkdir(exist_ok=True)
+        if not Path.exists(logging_path):
+            Path(logging_path).mkdir(parents=True, exist_ok=True)
 
-        root_logger = logging.getLogger()
+        # Clear existing handlers.
+        logger.remove()
 
-        # Reset Handlers
-        root_logger.handlers = []
-        root_logger.setLevel(logging_level_root)
+        # Console handler.
+        logger.add(sys.stderr, format=format_string_console, level=logging_level_console, colorize=True, enqueue=True)
 
+        # File handler (if enabled).
         if logging_file_enabled:
-            file_formatter = logging.Formatter(format_string_file)
-            rotating_file_handler = RotatingFileHandler(logging_path + logging_file, mode="a", maxBytes=5 * 1024 * 1024, backupCount=5, encoding="utf-8")
-            rotating_file_handler.setLevel(logging_level_file)
-            rotating_file_handler.setFormatter(file_formatter)
-            root_logger.addHandler(rotating_file_handler)
-
-        console_formatter = coloredlogs.ColoredFormatter(fmt=format_string_console)
-        stream_handler = logging.StreamHandler(stream=sys.stderr)
-        stream_handler.setFormatter(console_formatter)
-        stream_handler.setLevel(logging_level_console)
-        root_logger.addHandler(stream_handler)
+            log_file = logging_path / logging_file
+            logger.add(log_file, format=format_string_file, level=logging_level_file, rotation="5 MB", retention=5, enqueue=True)
 
     @staticmethod
     def instance(config_lock, imported_instance=None):

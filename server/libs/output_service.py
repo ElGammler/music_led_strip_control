@@ -1,8 +1,8 @@
-import logging
 import sys
 from time import time
 
 import numpy as np
+from loguru import logger
 
 from libs.fps_limiter import FPSLimiter  # pylint: disable=E0611, E0401
 from libs.notification_enum import NotificationEnum  # pylint: disable=E0611, E0401
@@ -14,13 +14,11 @@ from libs.outputs.output_udp import OutputUDP  # pylint: disable=E0611, E0401
 
 class OutputService:
     def start(self, device):
-        self.logger = logging.getLogger(__name__)
 
         self._device = device
         self._led_strip = self._device.device_config["led_strip"]
 
-        self.logger.info(
-            f'Starting Output service... Device: {self._device.device_config["device_name"]}')
+        logger.info(f'Starting Output service... Device: {self._device.device_config["device_name"]}')
 
         # Initial config load.
         self._config = self._device.config
@@ -46,12 +44,11 @@ class OutputService:
         }
 
         current_output_enum = OutputsEnum[self._device.device_config["output_type"]]
-        self.logger.debug(f"Found output: {current_output_enum}")
+        logger.debug(f"Found output: {current_output_enum}")
         self._current_output = self._available_outputs[current_output_enum](
             self._device)
 
-        self.logger.debug(
-            f'Output component started. Device: {self._device.device_config["device_name"]}')
+        logger.debug(f'Output component started. Device: {self._device.device_config["device_name"]}')
 
         try:
             while not self._cancel_token:
@@ -103,8 +100,7 @@ class OutputService:
             self.ten_seconds_counter = time()
             self.time_dif = self.end_time - self.start_time
             self.fps = 1 / self.time_dif
-            self.logger.info(
-                f'FPS: {self.fps:.2f} | Device: {self._device.device_config["device_name"]}')
+            logger.info(f'FPS: {self.fps:.2f} | Device: {self._device.device_config["device_name"]}')
 
         self.start_time = time()
 
@@ -113,7 +109,7 @@ class OutputService:
         self._current_output.clear()
 
     def refresh(self):
-        self.logger.debug("Refreshing output...")
+        logger.debug("Refreshing output...")
 
         # Refresh the config,
         self._config = self._device.config
@@ -122,4 +118,4 @@ class OutputService:
         self._device_notification_queue_out.put_blocking(
             NotificationEnum.config_refresh_finished)
 
-        self.logger.debug("Output refreshed.")
+        logger.debug("Output refreshed.")
