@@ -1,5 +1,5 @@
 import json
-import os
+from pathlib import Path
 
 from loguru import logger
 
@@ -13,9 +13,9 @@ class ConfigConverterV2(ConfigConverterBase):
 
     def upgrade(self, old_config):
         logger.info("Upgrade config to version 2.")
-        rel_config_path = "../../.mlsc/"
-        config_folder = os.path.abspath(rel_config_path) + "/"
-        tmp_convert_file_path = config_folder + "tmp_config_convert.json"
+        rel_config_path = Path("../../.mlsc/")
+        config_folder = Path(rel_config_path).resolve()
+        tmp_convert_file_path = config_folder / Path("tmp_config_convert.json")
 
         # self.delete_tmp_json(tmp_convert_file_path)
         # self.save_tmp_json(old_config, tmp_convert_file_path)
@@ -37,37 +37,42 @@ class ConfigConverterV2(ConfigConverterBase):
         logger.info("Config upgraded to version 2.")
         return new_config
 
-    def save_tmp_json(self, old_config, tmp_convert_file_path):
+    @staticmethod
+    def save_tmp_json(old_config, tmp_convert_file_path) -> None:
         try:
             logger.debug("Save tmp config file.")
             # Write tmp file
-            with open(tmp_convert_file_path, "w") as write_file:
+            with Path.open(tmp_convert_file_path, "w") as write_file:
                 json.dump(old_config, write_file, indent=4, sort_keys=True)
 
         except Exception as e:
             logger.exception(f"Exception while saving the tmp file: {e}")
 
-    def delete_tmp_json(self, tmp_convert_file_path):
+    @staticmethod
+    def delete_tmp_json(tmp_convert_file_path) -> None:
         try:
             logger.debug("Delete tmp config file.")
             # Search and delete tmp file
-            if os.path.exists(tmp_convert_file_path):
-                os.remove(tmp_convert_file_path)
+            if Path.exists(tmp_convert_file_path):
+                Path(tmp_convert_file_path).unlink()
         except Exception as e:
             logger.exception(f"Exception while delete the tmp file: {e}")
 
-    def read_tmp_json(self, tmp_convert_file_path):
+    @staticmethod
+    def read_tmp_json(tmp_convert_file_path):
         try:
             logger.debug("Read tmp config file.")
-            with open(tmp_convert_file_path, "r") as read_file:
+            with Path.open(tmp_convert_file_path, "r") as read_file:
                 return json.load(read_file)
         except Exception as e:
             logger.exception(f"Exception while read the tmp file: {e}")
 
-    def dict_to_json_string(self, old_config_dict):
+    @staticmethod
+    def dict_to_json_string(old_config_dict):
         return json.dumps(old_config_dict)
 
-    def json_string_to_dict(self, old_config_string):
+    @staticmethod
+    def json_string_to_dict(old_config_string):
         return json.loads(old_config_string)
 
     def rename_config(self, json_string):
@@ -78,9 +83,10 @@ class ConfigConverterV2(ConfigConverterBase):
 
         return json_string
 
-    def get_rename_map(self):
+    @staticmethod
+    def get_rename_map():
         # rename map describes the changes of the config. "before_value" : "after_value"
-        rename_map = {
+        return {
             "colours": "colors",
             "Black": "black",
             "Blue": "blue",
@@ -164,5 +170,3 @@ class ConfigConverterV2(ConfigConverterBase):
             "ERROR": "error",
             "CRITICAL": "critical"
         }
-
-        return rename_map

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from jsonschema import Draft202012Validator, validate  # noqa: F401
-from libs.webserver.schemas.custom_types import _valid_device_id, _valid_group_id, valid_name_type
+from libs.webserver.schemas.custom_types import valid_device_id, valid_group_id, valid_name_type
 from loguru import logger
 
 # Enums
@@ -1425,7 +1425,7 @@ device_schema = {
             "maxProperties": 100,
             "minProperties": 0,
             "patternProperties": {
-                _valid_group_id: valid_name_type
+                valid_group_id: valid_name_type
             },
         },
         "device_name": {
@@ -1608,7 +1608,7 @@ device_configs_schema = {
     "maxProperties": 100,
     "minProperties": 0,
     "patternProperties": {
-        _valid_device_id: device_schema
+        valid_device_id: device_schema
     }
 }
 
@@ -1645,7 +1645,7 @@ general_settings_schema = {
             "maxProperties": 100,
             "minProperties": 0,
             "patternProperties": {
-                _valid_group_id: valid_name_type
+                valid_group_id: valid_name_type
             }
         },
         "device_id": {
@@ -1924,7 +1924,8 @@ class ConfigValidatorService:
     def __init__(self: ConfigValidatorService) -> None:
         self.schema = self._get_schema()
 
-    def _get_schema(self: ConfigValidatorService) -> dict:
+    @staticmethod
+    def _get_schema() -> dict:
         return schema
 
     def validate_config(self: ConfigValidatorService, config):
@@ -1943,7 +1944,7 @@ def remove_required_keys(schema: dict | list) -> dict | list:
     if isinstance(schema, dict):
         new_obj = {}
         for key, value in schema.items():
-            if key in ["required", "minProperties"]:
+            if key in {"required", "minProperties"}:
                 continue
             new_obj[key] = remove_required_keys(value)
         return new_obj

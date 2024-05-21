@@ -30,21 +30,19 @@ class EffectBeatSlide(Effect):
         # Calculate how many steps the array will roll.
         steps = self.get_roll_steps(effect_config["speed"])
 
-        self.current_position = self.current_position + steps
+        self.current_position += steps
         if self.current_position > led_count:
             self.current_position = 0
 
         start_position = self.current_position
         end_position = start_position - effect_config["bar_length"]
-        if end_position < 0:
-            end_position = 0
+        end_position = max(end_position, 0)
 
         output = (self.prev_output * effect_config["decay"]).astype(int)
 
         if self.current_freq_detects["beat"]:
-            start_position = start_position + effect_config["slider_length"]
-            if start_position >= led_count:
-                start_position = led_count
+            start_position += effect_config["slider_length"]
+            start_position = min(led_count, start_position)
 
             self.current_position = start_position
 

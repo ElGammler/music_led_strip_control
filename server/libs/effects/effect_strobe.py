@@ -39,10 +39,7 @@ class EffectStrobe(Effect):
             output_array = np.zeros((3, self._device.device_config["led_count"]))
 
         if self.current_state:
-            if effect_config["use_custom_color"]:
-                color = effect_config["custom_color"]
-            else:
-                color = self._config_colours[effect_config["color"]]
+            color = effect_config["custom_color"] if effect_config["use_custom_color"] else self._config_colours[effect_config["color"]]
         else:
             color = self._config_colours["black"]
 

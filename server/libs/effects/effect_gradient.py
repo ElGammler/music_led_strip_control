@@ -17,11 +17,7 @@ class EffectGradient(Effect):
         led_mid = self._device.device_config["led_mid"]
 
         # Translate the true and false to a number, for the function use.
-        current_reverse_translated = 0
-        if current_reverse:
-            current_reverse_translated = -1
-        else:
-            current_reverse_translated = 1
+        current_reverse_translated = -1 if current_reverse else 1
 
         full_gradient_ref = self._color_service.full_gradients
 

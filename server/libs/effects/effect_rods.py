@@ -21,7 +21,7 @@ class EffectRods(Effect):
         led_count = self._device.device_config["led_count"]
         led_mid = self._device.device_config["led_mid"]
 
-        self.count_since_last_rod = self.count_since_last_rod + 1
+        self.count_since_last_rod += 1
 
         # Calculate how many steps the array will roll.
         steps = self.get_roll_steps(effect_config["speed"])
@@ -54,7 +54,7 @@ class EffectRods(Effect):
                 gradient = self._config["gradients"][effect_config["gradient"]]
                 count_colors_in_gradient = len(gradient)
 
-                self.current_color_index = self.current_color_index + 1
+                self.current_color_index += 1
                 if self.current_color_index > count_colors_in_gradient - 1:
                     self.current_color_index = 0
 

@@ -40,7 +40,7 @@ class EffectBeat(Effect):
                     self.gradient_position = random.randrange(0, len(full_gradient_ref[current_gradient][0]), 1)
 
                 else:
-                    self.gradient_position = self.gradient_position + 1
+                    self.gradient_position += 1
                     if self.gradient_position >= len(full_gradient_ref[current_gradient][0]):
                         self.gradient_position = 0
 

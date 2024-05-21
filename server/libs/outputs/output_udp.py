@@ -20,7 +20,7 @@ class OutputUDP(Output):
 
     def show(self, output_array):
 
-        output_array = output_array * (self._led_brightness / 100)
+        output_array *= self._led_brightness / 100
 
         output_array = self.map_channels(output_array)
         # Typecast the array to int.

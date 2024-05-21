@@ -23,7 +23,7 @@ class EffectWave(Effect):
             output[0][:] = self._color_service.colour(effect_config["color_flash"])[0]
             output[1][:] = self._color_service.colour(effect_config["color_flash"])[1]
             output[2][:] = self._color_service.colour(effect_config["color_flash"])[2]
-            self.wave_wipe_count = effect_config["wipe_len"] if effect_config["wipe_len"] <= led_count else led_count
+            self.wave_wipe_count = min(effect_config["wipe_len"], led_count)
         else:
             output = np.copy(self.prev_output)
             # for i in range(len(self.prev_output)):
@@ -37,8 +37,7 @@ class EffectWave(Effect):
                 output[2][i] = self._color_service.colour(effect_config["color_wave"])[2]
                 output[2][-i] = self._color_service.colour(effect_config["color_wave"])[2]
             # output = np.concatenate([output,np.fliplr(output)], axis=1)
-            if self.wave_wipe_count > led_count // 2:
-                self.wave_wipe_count = led_count // 2
+            self.wave_wipe_count = min(self.wave_wipe_count, led_count // 2)
 
             # Calculate how many steps the array will roll.
             steps = self.get_roll_steps(effect_config["wipe_speed"])

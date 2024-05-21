@@ -9,7 +9,7 @@ class ColorServiceGlobal:
         self._config = config
         device_config = {}
         if len(self._config["device_configs"].keys()) > 0:
-            device_key = list(self._config["device_configs"].keys())[0]
+            device_key = next(iter(self._config["device_configs"].keys()))
             device_config = self._config["device_configs"][device_key]
         else:
             device_config = self._config["default_device"]
@@ -46,21 +46,23 @@ class ColorServiceGlobal:
                 axis=1
             )
 
-    def _easing_gradient_generator(self, colors, length):
+    @staticmethod
+    def _easing_gradient_generator(colors: list, length: int):
         """Return np.array of given length that eases between specified colors.
 
         Parameters
         ----------
-        colors - list, colors must be in self.config.colour_manager["colors"]
+        colors: list, colors must be in self.config.colour_manager["colors"]
             eg. ["red", "orange", "blue", "purple"]
-        length - int, length of array to return. should be from self.config.settings
+        length: int, length of array to return. should be from self.config.settings
             eg. self.config.settings["devices"]["my strip"]["configuration"]["N_PIXELS"]
+
         """
         def _easing_func(x, length, slope=2.5):
             # Returns a nice eased curve with defined length and curve.
             xa = (x / length)**slope
             return xa / (xa + (1 - (x / length))**slope)
-        colors = colors[::-1]  # Needs to be reversed, makes it easier to deal with.
+        colors.reverse()  # Needs to be reversed, makes it easier to deal with.
         n_transitions = len(colors) - 1
         ease_length = length // n_transitions
         pad = length - (n_transitions * ease_length)
@@ -113,10 +115,7 @@ class ColorServiceGlobal:
         rolling_steps = int((fade_speed * time_diff) / 500)
 
         if rolling_steps >= 1:
-            if fade_reverse:
-                current_reverse_translated = -1
-            else:
-                current_reverse_translated = 1
+            current_reverse_translated = -1 if fade_reverse else 1
 
             self.full_gradients[fade_gradient] = np.roll(
                 self.full_gradients[fade_gradient],

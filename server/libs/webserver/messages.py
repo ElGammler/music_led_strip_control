@@ -52,6 +52,7 @@ class _Message(metaclass=_MessageMeta):
         ```json
         {"code": 400, "message": "Generic message.", "message_id": "_Message"}
         ```
+
         """
         return {
             "code": cls.code,

@@ -6,5 +6,6 @@ class ConfigConverterBase:
     from_version = 0
     to_version = 0
 
-    def upgrade(self, old_config):
+    @staticmethod
+    def upgrade(old_config):
         return old_config

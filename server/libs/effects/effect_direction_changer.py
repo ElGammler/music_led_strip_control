@@ -134,11 +134,7 @@ class EffectDirectionChanger(Effect):
         current_output_left[2][left_index:] = 0
 
         if self.current_bar_length_left < bar_length and self.current_bar_length_left > 0:
-            missing_bar_leds = 0
-            if steps > (bar_length - self.current_bar_length_left):
-                missing_bar_leds = bar_length - self.current_bar_length_left
-            else:
-                missing_bar_leds = steps
+            missing_bar_leds = min(steps, bar_length - self.current_bar_length_left)
 
             left_index = (self.output_left_length - steps)
             right_index = (self.output_left_length - steps) + missing_bar_leds
@@ -147,7 +143,7 @@ class EffectDirectionChanger(Effect):
             current_output_left[1][left_index:right_index] = last_left_color[1]
             current_output_left[2][left_index:right_index] = last_left_color[2]
 
-            self.current_bar_length_left = self.current_bar_length_left + missing_bar_leds
+            self.current_bar_length_left += missing_bar_leds
             if self.current_bar_length_left >= bar_length:
                 self.current_bar_length_left = 0
 
@@ -177,22 +173,17 @@ class EffectDirectionChanger(Effect):
         current_output_right[2][:right_index] = 0
 
         if self.current_bar_length_right < bar_length and self.current_bar_length_right > 0:
-            missing_bar_leds = 0
-            if steps > bar_length - self.current_bar_length_right:
-                missing_bar_leds = bar_length - self.current_bar_length_right
-            else:
-                missing_bar_leds = steps
+            missing_bar_leds = min(steps, bar_length - self.current_bar_length_right)
 
             left_index = (steps - missing_bar_leds) - 1
-            if left_index < 0:
-                left_index = 0
+            left_index = max(left_index, 0)
             right_index = steps
 
             current_output_right[0][left_index:right_index] = last_right_color[0]
             current_output_right[1][left_index:right_index] = last_right_color[1]
             current_output_right[2][left_index:right_index] = last_right_color[2]
 
-            self.current_bar_length_right = self.current_bar_length_right + missing_bar_leds
+            self.current_bar_length_right += missing_bar_leds
             if self.current_bar_length_right >= bar_length:
                 self.current_bar_length_right = 0
 
@@ -207,7 +198,7 @@ class EffectDirectionChanger(Effect):
                     self.gradient_position = random.randrange(0, len(full_gradient_ref[current_gradient][0]), 1)
 
                 else:
-                    self.gradient_position = self.gradient_position + 1
+                    self.gradient_position += 1
                     if self.gradient_position >= len(full_gradient_ref[current_gradient][0]):
                         self.gradient_position = 0
 
@@ -222,17 +213,14 @@ class EffectDirectionChanger(Effect):
 
             # Check how many bars are already in the same direction. Change the direction and increase/reset the counter.
             if self.bars_in_the_same_direction >= bars_in_same_direction:
-                self.current_direction = self.current_direction * -1
+                self.current_direction *= -1
                 self.bars_in_the_same_direction = 0
 
-            self.bars_in_the_same_direction = self.bars_in_the_same_direction + 1
+            self.bars_in_the_same_direction += 1
 
             # Add Left bar.
             if self.current_direction < 0:
-                if steps > bar_length:
-                    leds_to_show = bar_length
-                else:
-                    leds_to_show = steps
+                leds_to_show = min(steps, bar_length)
 
                 left_index = (self.output_left_length - steps)
                 right_index = (self.output_left_length - (steps - leds_to_show))
@@ -245,14 +233,10 @@ class EffectDirectionChanger(Effect):
 
             # Add Right bar.
             else:
-                if steps > bar_length:
-                    leds_to_show = bar_length
-                else:
-                    leds_to_show = steps
+                leds_to_show = min(steps, bar_length)
 
                 left_index = (steps - leds_to_show) - 1
-                if left_index < 0:
-                    left_index = 0
+                left_index = max(left_index, 0)
                 right_index = steps
 
                 current_output_right[0][left_index:right_index] = current_color_for_bar[0]

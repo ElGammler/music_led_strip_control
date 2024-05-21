@@ -6,7 +6,8 @@ class ConfigConverterService:
     def __init__(self) -> None:
         pass
 
-    def upgrade(self, old_config):
+    @staticmethod
+    def upgrade(old_config):
         config_converter_v2 = ConfigConverterV2()
         config_converter_v3 = ConfigConverterV3()
 

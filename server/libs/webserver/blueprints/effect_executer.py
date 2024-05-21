@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from random import choice
+from secrets import choice
 
 from libs.effects_enum import EffectNames
 from libs.webserver.executer_base import ExecuterBase
@@ -130,7 +130,7 @@ class EffectExecuter(ExecuterBase):
                 self.add_cycle_job(device)
             else:
                 self.scheduler.resume_job(device)
-        else:
+        else:  # noqa: PLR5501
             if self.scheduler.get_job(device):
                 self.scheduler.pause_job(device)
 
@@ -181,7 +181,7 @@ class EffectExecuter(ExecuterBase):
         if any(item["device"] not in self._config["device_configs"] for item in devices):
             return DeviceNotFound
 
-        if len(set([item["device"] for item in devices])) != len(devices):  # Check for device duplicates.
+        if len({item["device"] for item in devices}) != len(devices):  # Check for device duplicates.
             return DuplicateItem
 
         if len(devices) == 0:

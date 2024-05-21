@@ -24,7 +24,8 @@ class ConfigConverterV3(ConfigConverterBase):
         logger.info("Config upgraded to version 3.")
         return new_config
 
-    def format_global_groups(self, old_config: dict) -> dict:
+    @staticmethod
+    def format_global_groups(old_config: dict) -> dict:
         """Change old `list` format of global groups to `dict`."""
         global_groups = old_config["general_settings"].get("device_groups", [])
 
@@ -39,7 +40,8 @@ class ConfigConverterV3(ConfigConverterBase):
         old_config["general_settings"]["device_groups"] = new_global_groups
         return old_config
 
-    def format_device_groups(self, old_config: dict) -> dict:
+    @staticmethod
+    def format_device_groups(old_config: dict) -> dict:
         """Change old `list` format of device groups to `dict`."""
         global_groups = old_config["general_settings"]["device_groups"]  # Will exist after step 1.
 
@@ -57,7 +59,8 @@ class ConfigConverterV3(ConfigConverterBase):
             old_config["device_configs"][device]["device_groups"] = new_device_groups
         return old_config
 
-    def format_default_device_groups(self, old_config: dict) -> dict:
+    @staticmethod
+    def format_default_device_groups(old_config: dict) -> dict:
         """Change old `list` format of default device groups to `dict`."""
         old_config["default_device"]["device_groups"] = {}
         return old_config

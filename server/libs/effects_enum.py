@@ -1,10 +1,11 @@
 from enum import Enum
+from typing import ClassVar
 
 
 class EffectNames:
     """Add a new effect ID and Name to the correct dictionary in this class."""
 
-    non_music = {
+    non_music: ClassVar[dict[str, str]] = {
         "effect_single": "Single",
         "effect_gradient": "Gradient",
         "effect_fade": "Fade",
@@ -19,7 +20,7 @@ class EffectNames:
         "effect_strobe": "Strobe"
     }
 
-    music = {
+    music: ClassVar[dict[str, str]] = {
         "effect_scroll": "Scroll",
         "effect_advanced_scroll": "Advanced Scroll",
         "effect_energy": "Energy",
@@ -37,7 +38,7 @@ class EffectNames:
         "effect_border": "Border"
     }
 
-    special = {
+    special: ClassVar[dict[str, str]] = {
         "effect_off": "Off",
         "effect_random_cycle": "Random Cycle",
         "effect_random_non_music": "Random Non-Music",

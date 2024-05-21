@@ -8,5 +8,6 @@ class OutputDummy(Output):
         # Call the constructor of the base class.
         super().__init__(device)
 
-    def show(self, output_array):
-        logger.debug("Output dummy...")
+    @staticmethod
+    def show(output_array) -> None:
+        logger.debug(f"Output dummy... {output_array}")

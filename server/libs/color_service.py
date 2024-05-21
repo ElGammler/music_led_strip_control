@@ -46,21 +46,23 @@ class ColorService:
                 axis=1
             )
 
-    def _easing_gradient_generator(self, colors, length):
+    @staticmethod
+    def _easing_gradient_generator(colors: list, length: int):
         """Return np.array of given length that eases between specified colors.
 
         Parameters
         ----------
-        colors - list, colors must be in self.config.colour_manager["colors"]
+        colors: list, colors must be in self.config.colour_manager["colors"]
             eg. ["red", "orange", "blue", "purple"]
-        length - int, length of array to return. should be from self.config.settings
+        length: int, length of array to return. should be from self.config.settings
             eg. self.config.settings["devices"]["my strip"]["configuration"]["N_PIXELS"]
+
         """
         def _easing_func(x, length, slope=2.5):
             # Returns a nice eased curve with defined length and curve.
             xa = (x / length)**slope
             return xa / (xa + (1 - (x / length))**slope)
-        colors = colors[::-1]  # Needs to be reversed, makes it easier to deal with.
+        colors.reverse()  # Needs to be reversed, makes it easier to deal with.
         n_transitions = len(colors) - 1
         ease_length = length // n_transitions
         pad = length - (n_transitions * ease_length)
@@ -152,18 +154,16 @@ class ColorService:
                     end_index = int(start_index + effect_config["bubble_length"])
 
                     # If the start reaches the end of the string something is wrong.
-                    if start_index > led_count - 1:
-                        start_index = led_count - 1
+                    start_index = min(start_index, led_count - 1)
 
                     # If the range of the strip is reached use the max index.
-                    if end_index > led_count - 1:
-                        end_index = led_count - 1
+                    end_index = min(end_index, led_count - 1)
 
                     self.full_bubble[gradient][0][start_index:end_index] = color[0]
                     self.full_bubble[gradient][1][start_index:end_index] = color[1]
                     self.full_bubble[gradient][2][start_index:end_index] = color[2]
 
-                current_color = current_color + 1
+                current_color += 1
 
             # Build an array, that contains the bubble array three times.
             tmp_gradient_array = self.full_bubble[gradient]

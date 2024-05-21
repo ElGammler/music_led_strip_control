@@ -32,7 +32,8 @@ class DSP:
         # self.samples_per_frame = int(default_sample_rate / fps)
         self.samples_per_frame = int(frames_per_buffer)
         # Array containing the rolling audio sample window.
-        self.y_roll = np.random.rand(n_rolling_history, self.samples_per_frame) / 1e16
+        rng = np.random.default_rng()
+        self.y_roll = rng.random((n_rolling_history, self.samples_per_frame)) / 1e16
         self.fft_window = np.hamming(int(frames_per_buffer) * n_rolling_history)
 
         self.samples = None
@@ -51,6 +52,7 @@ class DSP:
         -------
         audio_data: dict
             Dict containing "mel", "vol", "x", and "y".
+
         """
         min_frequency = self._config["general_settings"]["min_frequency"]
         max_frequency = self._config["general_settings"]["max_frequency"]
@@ -64,17 +66,17 @@ class DSP:
         y_data = np.concatenate(self.y_roll, axis=0).astype(np.float32)
         vol = np.max(np.abs(y_data))
         # Transform audio input into the frequency domain.
-        N = len(y_data)
-        N_zeros = 2**int(np.ceil(np.log2(N))) - N
+        N = len(y_data)  # noqa: N806
+        N_zeros = 2**int(np.ceil(np.log2(N))) - N  # noqa: N806
         # Pad with zeros until the next power of two.
         y_data *= self.fft_window
         y_padded = np.pad(y_data, (0, N_zeros), mode="constant")
-        YS = np.abs(np.fft.rfft(y_padded))
+        YS = np.abs(np.fft.rfft(y_padded))  # noqa: N806
         # Construct a Mel filterbank from the FFT data.
         mel = np.atleast_2d(YS).T * self.mel_y.T
         # Scale data to values more suitable for visualization.
         mel = np.sum(mel, axis=0)
-        mel = mel**2.0
+        mel **= 2.0
         # Gain normalization.
         self.mel_gain.update(np.max(gaussian_filter1d(mel, sigma=1.0)))
         mel /= self.mel_gain.value
@@ -179,7 +181,8 @@ class Melbank:
     ---------.
     """
 
-    def hertz_to_mel(self, freq):
+    @staticmethod
+    def hertz_to_mel(freq):
         """Return mel-frequency from linear frequency input.
 
         Parameter
@@ -191,10 +194,12 @@ class Melbank:
         -------
         mel : scalar or ndarray
             Mel-frequency value or ndarray in Mel.
+
         """
         return 3340.0 * log(1 + (freq / 250.0), 9)
 
-    def mel_to_hertz(self, mel):
+    @staticmethod
+    def mel_to_hertz(mel):
         """Return frequency from mel-frequency input.
 
         Parameter
@@ -206,6 +211,7 @@ class Melbank:
         -------
         freq : scalar or ndarray
             Frequency value or array in Hz.
+
         """
         # return 700.0 * (10**(mel / 2595.0)) - 700.0
         return 250.0 * (9**(mel / 3340.0)) - 250.0
@@ -229,6 +235,7 @@ class Melbank:
         center_frequencies_mel : ndarray
         lower_edges_mel : ndarray
         upper_edges_mel : ndarray.
+
         """
         mel_max = self.hertz_to_mel(freq_max)
         mel_min = self.hertz_to_mel(freq_min)
@@ -272,6 +279,7 @@ class Melbank:
             to a mel-spectrum.
         frequencies : tuple (ndarray <num_mel_bands>, ndarray <num_fft_bands>)
             Center frequencies of the mel bands, center frequencies of fft spectrum.
+
         """
         center_frequencies_mel, lower_edges_mel, upper_edges_mel = self.melfrequencies_mel_filterbank(
             num_mel_bands,

@@ -3,7 +3,7 @@ import re
 import secrets
 from configparser import ConfigParser, MissingSectionHeaderError, ParsingError
 from copy import deepcopy
-from os import chmod
+from pathlib import Path
 from typing import TypedDict
 from urllib.parse import urljoin, urlparse
 
@@ -83,10 +83,10 @@ class AuthenticationExecuter(ExecuterBase):
     def save_config(self) -> None:
         """Save PIN config to file."""
         logger.debug("Saving PIN to file...")
-        with open(self.config_path, "w") as configfile:
+        with Path.open(self.config_path, "w") as configfile:
             self.config.write(configfile)
             if platform.system().lower() == "linux":
-                chmod(self.config_path, 775)
+                Path.chmod(self.config_path, 775)
         logger.debug("Pin saved to file.")
 
     def reset_config(self) -> None:
@@ -129,15 +129,17 @@ class AuthenticationExecuter(ExecuterBase):
         logger.debug("PIN read from file.")
         return default_values
 
-    def validate_pin(self, pin: str) -> bool:
+    @staticmethod
+    def validate_pin(pin: str) -> bool:
         """Validate PIN to be from 4 to 8 digits."""
         return bool(re.fullmatch(r"\d{4,8}", pin))
 
-    def is_safe_url(self, target: str) -> bool:
+    @staticmethod
+    def is_safe_url(target: str) -> bool:
         """Check if URL is safe to redirect to."""
         ref_url = urlparse(request.host_url)
         test_url = urlparse(urljoin(request.host_url, target))
-        return test_url.scheme in ("http", "https") and ref_url.netloc == test_url.netloc
+        return test_url.scheme in {"http", "https"} and ref_url.netloc == test_url.netloc
 
     def set_pin_setting(self, data: PinConfig) -> None:
         """Interface to set PIN settings from API."""
@@ -156,7 +158,8 @@ class AuthenticationExecuter(ExecuterBase):
         self.reset_config()
         return self.read_config()
 
-    def login(self) -> None:
+    @staticmethod
+    def login() -> None:
         """Log in the user."""
         logger.debug("Enter login()")
         user_id = "1001"

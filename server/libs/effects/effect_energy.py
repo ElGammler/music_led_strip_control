@@ -45,9 +45,6 @@ class EffectEnergy(Effect):
             self.output[1, :] = gaussian_filter1d(self.output[1, :], sigma=blur_amount)
             self.output[2, :] = gaussian_filter1d(self.output[2, :], sigma=blur_amount)
 
-        if effect_config["mirror"]:
-            output_array = self.mirror_array(self.output, led_mid, led_count)
-        else:
-            output_array = self.output
+        output_array = self.mirror_array(self.output, led_mid, led_count) if effect_config["mirror"] else self.output
 
         self.queue_output_array_noneblocking(output_array)

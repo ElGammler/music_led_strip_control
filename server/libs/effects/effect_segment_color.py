@@ -33,14 +33,12 @@ class EffectSegmentColor(Effect):
             if start <= 0:
                 start = 1
 
-            if start > led_count:
-                start = led_count
+            start = min(start, led_count)
 
             if end <= 0:
                 end = 1
 
-            if end > led_count:
-                end = led_count
+            end = min(end, led_count)
 
             if end < start:
                 continue

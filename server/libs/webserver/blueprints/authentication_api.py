@@ -36,7 +36,7 @@ def login():
       responses:
         "200":
           description: OK.
-    """  # noqa: D205
+    """  # noqa: D205, D400, D415
     pin = request.form.get("pin")
 
     if not pin:
@@ -76,7 +76,7 @@ def logout():
           text/html:
             schema:
               type: string.
-    """  # noqa: D205, D301
+    """  # noqa: D205, D301, D400, D415
     if current_user.is_authenticated:
         logout_user()
     return redirect(url_for("authentication_api.login"))
@@ -101,7 +101,7 @@ def get_pin_setting():  # pylint: disable=E0211
               type: object
       "401":
         description: Unauthorized.
-    """  # noqa: D205
+    """  # noqa: D205, D400, D415
     is_pin_active = Executer.instance.authentication_executer.is_pin_active()
     is_authenticated = current_user.is_authenticated
 
@@ -148,7 +148,7 @@ def set_pin_setting():  # pylint: disable=E0211
               type: object
       "401":
         description: Unauthorized.
-    """  # noqa: D205
+    """  # noqa: D205, D400, D415
     is_pin_active = Executer.instance.authentication_executer.is_pin_active()
     is_authenticated = current_user.is_authenticated
 
@@ -184,7 +184,7 @@ def reset_pin_setting():  # pylint: disable=E0211
               type: object
       "401":
         description: Unauthorized.
-    """  # noqa: D205
+    """  # noqa: D205, D400, D415
     is_pin_active = Executer.instance.authentication_executer.is_pin_active()
     is_authenticated = current_user.is_authenticated
 

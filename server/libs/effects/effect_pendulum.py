@@ -21,12 +21,12 @@ class EffectPendulum(Effect):
         effect_config = self.get_effect_config("effect_pendulum")
         led_count = self._device.device_config["led_count"]
 
-        if (self.current_position == 0) or (self.current_position == led_count - 1):
+        if self.current_position in {0, led_count - 1}:
             if effect_config["change_color"]:
                 gradient = self._config["gradients"][effect_config["gradient"]]
                 count_colors_in_gradient = len(gradient)
 
-                self.current_color_index = self.current_color_index + 1
+                self.current_color_index += 1
                 if self.current_color_index > count_colors_in_gradient - 1:
                     self.current_color_index = 0
 
@@ -50,7 +50,7 @@ class EffectPendulum(Effect):
             if self.current_position == 0:
                 self.current_position = effect_config["pendulum_length"]
 
-            self.current_position = self.current_position + steps
+            self.current_position += steps
 
             if self.current_position > led_count - 1:
                 self.current_position = led_count - 1
@@ -58,8 +58,7 @@ class EffectPendulum(Effect):
 
             start_position = self.current_position
             end_position = start_position - effect_config["pendulum_length"]
-            if end_position < 0:
-                end_position = 0
+            end_position = max(end_position, 0)
 
             output_array[0, end_position:start_position] = self.current_color[0]
             output_array[1, end_position:start_position] = self.current_color[1]
@@ -74,7 +73,7 @@ class EffectPendulum(Effect):
             if self.current_position == led_count - 1:
                 self.current_position = (led_count - 1) - effect_config["pendulum_length"]
 
-            self.current_position = self.current_position - steps
+            self.current_position -= steps
 
             if self.current_position < 0:
                 self.current_position = 0
@@ -82,8 +81,7 @@ class EffectPendulum(Effect):
 
             start_position = self.current_position
             end_position = start_position + effect_config["pendulum_length"]
-            if end_position > led_count - 1:
-                end_position = led_count - 1
+            end_position = min(end_position, led_count - 1)
 
             output_array[0, start_position:end_position] = self.current_color[0]
             output_array[1, start_position:end_position] = self.current_color[1]

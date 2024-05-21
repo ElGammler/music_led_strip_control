@@ -48,7 +48,8 @@ class SystemInfoExecuter(ExecuterBase):
             }
         }
 
-    def get_cpu_info(self: SystemInfoExecuter) -> dict:
+    @staticmethod
+    def get_cpu_info() -> dict:
         """Return CPU information."""
         cpu_freq = psutil.cpu_freq()._asdict()
         cpu_usage = psutil.cpu_times_percent(0.0)._asdict()
@@ -59,15 +60,18 @@ class SystemInfoExecuter(ExecuterBase):
             "percent": cpu_percent
         }
 
-    def get_memory_info(self: SystemInfoExecuter) -> dict:
+    @staticmethod
+    def get_memory_info() -> dict:
         """Return memory information."""
         return psutil.virtual_memory()._asdict()
 
-    def get_disk_info(self: SystemInfoExecuter) -> dict:
+    @staticmethod
+    def get_disk_info() -> dict:
         """Return disk information."""
         return psutil.disk_usage("/")._asdict()
 
-    def get_network_info(self: SystemInfoExecuter) -> list[dict]:
+    @staticmethod
+    def get_network_info() -> list[dict]:
         """Return network information."""
         network_info = []
         all_network_info = psutil.net_if_addrs()
@@ -91,7 +95,8 @@ class SystemInfoExecuter(ExecuterBase):
             "system": self.get_raspi_temp()
         }
 
-    def get_raspi_temp(self: SystemInfoExecuter) -> dict:
+    @staticmethod
+    def get_raspi_temp() -> dict:
         """Return system temperature."""
         if platform.system() != "Linux" or not Path("/usr/bin/vcgencmd").exists():
             return {
@@ -112,7 +117,8 @@ class SystemInfoExecuter(ExecuterBase):
             }
         }
 
-    def get_services(self: SystemInfoExecuter) -> dict[str, list[str]]:
+    @staticmethod
+    def get_services() -> dict[str, list[str]]:
         """Return list of system services."""
         return {
             "services": ["mlsc", "hostapd", "dhcpcd", "dnsmasq"]
@@ -124,7 +130,8 @@ class SystemInfoExecuter(ExecuterBase):
             "services": [self.get_service_status(service) for service in self.get_services()["services"]]
         }
 
-    def get_service_status(self: SystemInfoExecuter, service_name: str) -> dict:
+    @staticmethod
+    def get_service_status(service_name: str) -> dict:
         """Return service status details."""
         service_info = BuildServiceInfo(service_name)
 
@@ -144,7 +151,7 @@ class SystemInfoExecuter(ExecuterBase):
             elif grepexc.returncode == 4:
                 service_info.update(not_found=True)
             service_info.update(running=False)
-        except Exception:  # noqa: BLE001
+        except Exception:
             logger.debug(f"Could not get service status: {service_name}")
 
         return service_info.as_dict()
@@ -173,7 +180,8 @@ class SystemInfoExecuter(ExecuterBase):
             "devices": devices
         }
 
-    def check_device_status(self: SystemInfoExecuter, address: str) -> bool:
+    @staticmethod
+    def check_device_status(address: str) -> bool:
         """Return True if host (str) responds to a ping request.
 
         A host may not respond to a ping (ICMP) request even if the host name is valid.
@@ -181,7 +189,8 @@ class SystemInfoExecuter(ExecuterBase):
         host = ping(address, count=1, interval=0.2)
         return host.is_alive
 
-    def get_system_version(self: SystemInfoExecuter) -> dict[str, list[dict]]:
+    @staticmethod
+    def get_system_version() -> dict[str, list[dict]]:
         """Return system version information."""
         return {
             "versions": [

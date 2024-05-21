@@ -38,7 +38,7 @@ def update(orig: dict, new: dict) -> dict:
     https://stackoverflow.com/questions/3232943.
     """
     for k, v in new.items():
-        if k in ["device_groups"]:
+        if k == "device_groups":
             orig[k] = v
         if isinstance(v, Mapping):
             orig[k] = update(orig.get(k, {}), v)
@@ -56,7 +56,7 @@ def validate_schema(data: dict, schema: dict) -> bool:
         validate(data, schema, format_checker=Draft202012Validator.FORMAT_CHECKER)
     except ValidationError as e:
         path_fmt = " -> ".join([str(p) for p in e.absolute_path])
-        logger.error(f"Schema validation error in request:\n{path_fmt} - {e.message}")  # noqa: TRY400
+        logger.error(f"Schema validation error in request:\n{path_fmt} - {e.message}")
 
         return False
 
@@ -111,7 +111,8 @@ class ExecuterBase:
     def refresh_device(self, device_id):
         self.put_into_notification_queue(NotificationEnum.config_refresh, device_id)
 
-    def validate_data_in(self, dictionary, keys):
+    @staticmethod
+    def validate_data_in(dictionary: dict, keys: tuple) -> bool:
         """WARNING: DEPRECATED."""
         if not isinstance(dictionary, dict):
             logger.error("Error in validate_data_in: dictionary is not a dict.")

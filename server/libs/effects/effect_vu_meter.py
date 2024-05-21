@@ -47,8 +47,7 @@ class EffectVuMeter(Effect):
             output[1][: leds_on] = self._color_service.colour(effect_config["color"])[1]
             output[2][: leds_on] = self._color_service.colour(effect_config["color"])[2]
 
-        if normalized_vol > self.max_vol:
-            self.max_vol = normalized_vol
+        self.max_vol = max(normalized_vol, self.max_vol)
 
         # Show the max. volume
         output[0][int(self.max_vol * led_count) - effect_config["bar_length"]: int(self.max_vol * led_count)] = self._color_service.colour(effect_config["max_vol_color"])[0]
@@ -68,5 +67,4 @@ class EffectVuMeter(Effect):
         self.vol_history[0] = current_vol
 
     def get_normalized_vol(self, current_vol):
-        normalized_vol = (current_vol - np.min(self.vol_history)) / (np.max(self.vol_history) - np.min(self.vol_history))
-        return normalized_vol
+        return (current_vol - np.min(self.vol_history)) / (np.max(self.vol_history) - np.min(self.vol_history))

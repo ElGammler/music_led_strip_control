@@ -25,11 +25,16 @@ class EffectBars(Effect):
         # Split y into [resolution] chunks and calculate the average of each.
         max_values = np.array([max(i) for i in np.array_split(r, effect_config["resolution"])])
         max_values = np.clip(max_values, 0, 1)
-        color_sets = []
-        for i in range(effect_config["resolution"]):
+
+        color_sets = [
             # [r,g,b] values from a multicolor gradient array at [resolution] equally spaced intervals.
-            color_sets.append([self._color_service.full_gradients[effect_config["color_mode"]]
-                              [j][i * (led_count // effect_config["resolution"])] for j in range(3)])
+            [
+                self._color_service.full_gradients[effect_config["color_mode"]][j][i * (led_count // effect_config["resolution"])]
+                for j in range(3)
+            ]
+            for i in range(effect_config["resolution"])
+        ]
+
         output = np.zeros((3, led_count))
         chunks = np.array_split(output[0], effect_config["resolution"])
         n = 0

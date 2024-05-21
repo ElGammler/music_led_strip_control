@@ -33,11 +33,9 @@ class EffectBorder(Effect):
         for i in range(bar_count):
             if effect_config["manually_resize_bars"]:
                 start = effect_config[f"segment_0{i + 1}_start"]
-                if start < 0:
-                    start = 0
+                start = max(start, 0)
                 end = start + int(bass_output * (effect_config[f"segment_0{i + 1}_end"] - start))
-                if end > led_count:
-                    end = led_count
+                end = min(end, led_count)
             else:
                 start = i * (led_count // bar_count)
                 end = start + int(bass_output * (led_count // bar_count))

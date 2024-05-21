@@ -28,7 +28,7 @@ class EffectTwinkle(Effect):
         # Reset output array.
         self.output = np.zeros((3, self._device.device_config["led_count"]))
         # Randomly add the stars, depending on speed settings.
-        if random.randrange(0, 100, 1) <= effect_config["star_ascending_speed"]:
+        if random.randrange(0, 100, 1) <= effect_config["star_ascending_speed"]:  # noqa: SIM102
             # Add a star only if the list is not full.
             if len(self.rising_stars) < effect_config["stars_count"]:
                 gradient = self._config["gradients"][effect_config["gradient"]]
@@ -39,8 +39,7 @@ class EffectTwinkle(Effect):
                 star_end_position = star_start_position + effect_config["stars_length"]
 
                 # Check if end position still in array.
-                if star_end_position > led_count - 1:
-                    star_end_position = led_count - 1
+                star_end_position = min(star_end_position, led_count - 1)
 
                 # Add the new rising star with a random color out of the gradient selection.
                 self.rising_stars.append([[gradient[selected_color_index][0], gradient[selected_color_index][1], gradient[selected_color_index][2]], [star_start_position, star_end_position], 1])
@@ -49,10 +48,9 @@ class EffectTwinkle(Effect):
 
         # Set the new rising stars value.
         for current_star in self.rising_stars:
-            current_star[2] = current_star[2] + effect_config["star_rising_speed"]
+            current_star[2] += effect_config["star_rising_speed"]
             # Only allow 100 percent maximum.
-            if current_star[2] > 100:
-                current_star[2] = 100
+            current_star[2] = min(current_star[2], 100)
 
             if current_star[2] == 100:
                 self.descending_stars.append(current_star)
@@ -71,10 +69,9 @@ class EffectTwinkle(Effect):
 
         # Set the new descending stars value.
         for current_star in self.descending_stars:
-            current_star[2] = current_star[2] - effect_config["star_descending_speed"]
+            current_star[2] -= effect_config["star_descending_speed"]
             # Only allow 0 percent minimum.
-            if current_star[2] < 0:
-                current_star[2] = 0
+            current_star[2] = max(current_star[2], 0)
 
             if current_star[2] == 0:
                 remove_stars_descending.append(current_star)

@@ -28,14 +28,16 @@ class GeneralExecuter(ExecuterBase):
         audio_devices = AudioInfo.get_audio_devices(self._py_audio)
         return {value.device_id: value.to_string() for value in audio_devices}
 
-    def get_output_types(self) -> dict[str, str]:
+    @staticmethod
+    def get_output_types() -> dict[str, str]:
         """Return output types."""
         return {
             "output_raspi": "Output Raspberry Pi",
             "output_udp": "Output Network via UDP"
         }
 
-    def get_effects(self) -> dict[str, dict]:
+    @staticmethod
+    def get_effects() -> dict[str, dict]:
         """Return effects."""
         return {
             "non_music": EffectNames.non_music,

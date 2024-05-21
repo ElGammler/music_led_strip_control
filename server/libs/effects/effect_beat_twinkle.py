@@ -21,8 +21,7 @@ class EffectBeatTwinkle(Effect):
         star_length = effect_config["star_length"]
         decay = effect_config["decay"]
 
-        if star_length > led_count:
-            star_length = led_count
+        star_length = min(star_length, led_count)
 
         audio_data = self.get_audio_data()
         y = self.get_mel(audio_data)
@@ -54,7 +53,7 @@ class EffectBeatTwinkle(Effect):
                     self.gradient_position = random.randrange(0, len(full_gradient_ref[current_gradient][0]), 1)
 
                 else:
-                    self.gradient_position = self.gradient_position + 1
+                    self.gradient_position += 1
                     if self.gradient_position >= len(full_gradient_ref[current_gradient][0]):
                         self.gradient_position = 0
 

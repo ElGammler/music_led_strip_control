@@ -34,7 +34,8 @@ class MicrophoneSettingsExecuter(ExecuterBase):
 
         return result
 
-    def microphone_set_volume(self, level: str) -> dict:
+    @staticmethod
+    def microphone_set_volume(level: str) -> dict:
         """Set the microphone volume."""
         result = {}
         try:
@@ -57,7 +58,8 @@ class MicrophoneSettingsExecuter(ExecuterBase):
 
         return result
 
-    def get_level_form_output(self, output: str) -> int:
+    @staticmethod
+    def get_level_form_output(output: str) -> int:
         """Get the level from the output of the amixer command."""
         if output is None or not output:
             return 0

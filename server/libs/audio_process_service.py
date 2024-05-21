@@ -138,7 +138,8 @@ class AudioProcessService:
         except Exception:
             logger.exception("Unexpected error in init_audio_service.")
 
-    def log_output(self, show_output, log_level, message):
+    @staticmethod
+    def log_output(show_output, log_level, message) -> None:
         if show_output:
             if log_level == "INFO":
                 logger.info(message)

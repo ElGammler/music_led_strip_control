@@ -3,6 +3,7 @@ class Output:
         self._device = device
         self._device_config = device.device_config
 
-    def show(self, output_array):
-        msg = "Please implement this method."
+    @staticmethod
+    def show(output_array) -> None:
+        msg = f"Please implement this method. {output_array}"
         raise NotImplementedError(msg)

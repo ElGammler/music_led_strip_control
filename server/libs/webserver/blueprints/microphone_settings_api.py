@@ -25,7 +25,7 @@ def microphone_get_volume():  # pylint: disable=E0211
                 output: str
                 returncode: int
               type: object.
-    """  # noqa: D205
+    """  # noqa: D205, D400, D415
     data_out = Executer.instance.microphone_settings_executer.microphone_get_volume()
 
     return jsonify(data_out)
@@ -64,7 +64,7 @@ def microphone_set_volume():  # pylint: disable=E0211
               type: object
       "422":
         description: Unprocessable Entity.
-    """  # noqa: D205
+    """  # noqa: D205, D400, D415
     data_in = request.get_json()
 
     if not Executer.instance.effect_executer.validate_data_in(data_in, ("level",)):

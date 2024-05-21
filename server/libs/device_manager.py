@@ -83,7 +83,9 @@ class DeviceManager:
     def check_config_changes(self):
         if not self._notification_queue_in.empty():
             current_notification_item = self._notification_queue_in.get_blocking()
-            logger.debug(f"Device Manager received new notification: {current_notification_item.notification_enum} - {current_notification_item.device_id}")
+            logger.debug(
+                f"Device Manager received new notification: {current_notification_item.notification_enum} - {current_notification_item.device_id}"
+            )
 
             if current_notification_item.notification_enum is NotificationEnum.config_refresh:
 

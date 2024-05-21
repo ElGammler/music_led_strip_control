@@ -33,7 +33,7 @@ def route_effect_settings(template: str):
         return render_template(f"home/effects/{template}.html", segment=segment, devices=devices, groups=assigned_groups)
     except TemplateNotFound:
         abort(404)
-    except Exception:  # noqa: BLE001
+    except Exception:
         abort(500)
 
 
@@ -48,7 +48,7 @@ def route_settings(template: str):
         return render_template(f"home/settings/{template}.html", segment=segment, devices=devices, groups=groups)
     except TemplateNotFound:
         abort(404)
-    except Exception:  # noqa: BLE001
+    except Exception:
         abort(500)
 
 
@@ -59,5 +59,5 @@ def get_segment() -> str:
         if not segment:
             segment = "dashboard"
         return segment
-    except Exception:  # noqa: BLE001
+    except Exception:
         return None

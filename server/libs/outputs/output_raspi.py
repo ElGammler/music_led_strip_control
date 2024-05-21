@@ -10,10 +10,10 @@ class OutputRaspi(Output):
         super().__init__(device)
 
         try:
-            import _rpi_ws281x as ws  # pylint: disable=import-error
+            import _rpi_ws281x as ws  # noqa: PLC0415
         except (ImportError, ModuleNotFoundError):
             return
-            from rpi_ws281x import ws
+            from rpi_ws281x import ws  # noqa: PLC0415
 
         output_id = "output_raspi"
 
@@ -55,7 +55,7 @@ class OutputRaspi(Output):
                 self._led_strip_translated = led_strip
                 logger.debug(f"Found Led Strip {self._led_strip}")
         except Exception as e:
-            logger.exception(f"Could not find LED Strip Type. Exception: {str(e)}")
+            logger.exception(f"Could not find LED Strip Type. Exception: {e}")
 
         self._led_brightness_translated = int(255 * (self._led_brightness / 100))
 
@@ -79,13 +79,14 @@ class OutputRaspi(Output):
         resp = ws.ws2811_init(self._leds)
         if resp != ws.WS2811_SUCCESS:
             message = ws.ws2811_get_return_t_str(resp)
-            raise RuntimeError(f"ws2811_init failed with code {resp} ({message})")
+            error_msg = f"ws2811_init failed with code {resp} ({message})"
+            raise RuntimeError(error_msg)
 
     def show(self, output_array):
         try:
-            import _rpi_ws281x as ws  # pylint: disable=import-error
+            import _rpi_ws281x as ws  # noqa: PLC0415
         except (ImportError, ModuleNotFoundError):
-            from rpi_ws281x import ws
+            from rpi_ws281x import ws  # noqa: PLC0415
 
         # Typecast the array to int.
         output_array = output_array.clip(0, 255).astype(int)
@@ -117,4 +118,5 @@ class OutputRaspi(Output):
 
         if resp != ws.WS2811_SUCCESS:
             message = ws.ws2811_get_return_t_str(resp)
-            raise RuntimeError(f"ws2811_render failed with code {resp} ({message})")
+            error_msg = f"ws2811_render failed with code {resp} ({message})"
+            raise RuntimeError(error_msg)

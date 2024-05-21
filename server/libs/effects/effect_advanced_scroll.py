@@ -31,7 +31,7 @@ class EffectAdvancedScroll(Effect):
 
         # Effect that scrolls colors corresponding to frequencies across the strip.
         # Increase the peaks by y^4
-        y = y**4.0
+        y **= 4.0
         n_pixels = led_count
 
         self.prev_spectrum = np.copy(y)
@@ -148,9 +148,6 @@ class EffectAdvancedScroll(Effect):
         if blur_amount > 0:
             self.output = gaussian_filter1d(self.output, sigma=blur_amount)
 
-        if effect_config["mirror"]:
-            output_array = self.mirror_array(self.output, led_mid, led_count)
-        else:
-            output_array = self.output
+        output_array = self.mirror_array(self.output, led_mid, led_count) if effect_config["mirror"] else self.output
 
         self.queue_output_array_noneblocking(output_array)

@@ -50,26 +50,22 @@ class EffectFireplace(Effect):
         firebase_flicker_speed = effect_config["firebase_flicker_speed"]
         firebase_area_maxlength = effect_config["firebase_area_maxlength"]
         firebase_area_minlength = effect_config["firebase_area_minlength"]
-        if firebase_area_minlength > firebase_area_maxlength:
-            firebase_area_minlength = firebase_area_maxlength
+        firebase_area_minlength = min(firebase_area_minlength, firebase_area_maxlength)
 
         sparks_flicker_speed = effect_config["sparks_flicker_speed"]
         sparks_fly_speed = effect_config["sparks_fly_speed"]
 
         sparks_maxappear_distance = effect_config["sparks_maxappear_distance"]
         sparks_minappear_distance = effect_config["sparks_minappear_distance"]
-        if sparks_minappear_distance > sparks_maxappear_distance:
-            sparks_minappear_distance = sparks_maxappear_distance
+        sparks_minappear_distance = min(sparks_minappear_distance, sparks_maxappear_distance)
 
         sparks_max_length = effect_config["sparks_max_length"]
         sparks_min_length = effect_config["sparks_min_length"]
-        if sparks_min_length > sparks_max_length:
-            sparks_min_length = sparks_max_length
+        sparks_min_length = min(sparks_min_length, sparks_max_length)
 
         sparks_area_minlength = effect_config["sparks_area_minlength"]
         sparks_area_maxlength = effect_config["sparks_area_maxlength"]
-        if sparks_area_minlength > sparks_area_maxlength:
-            sparks_area_minlength = sparks_area_maxlength
+        sparks_area_minlength = min(sparks_area_minlength, sparks_area_maxlength)
 
         use_color_variation = effect_config["use_color_variation"]
         color_variation = effect_config["color_variation"]
@@ -81,10 +77,10 @@ class EffectFireplace(Effect):
         sparks_maincolor = self._config_colours[effect_config["sparks_maincolor"]]
 
         # Calculate the target area lengths.
-        if self.firebase_area_target_length == 0 or self.firebase_area_current_length == self.firebase_area_target_length:
+        if self.firebase_area_target_length in {0, self.firebase_area_current_length}:
             self.firebase_area_target_length = randint(firebase_area_minlength, firebase_area_maxlength)
 
-        if self.sparks_area_target_length == 0 or self.sparks_area_current_length == self.sparks_area_target_length:
+        if self.sparks_area_target_length in {0, self.sparks_area_current_length}:
             self.sparks_area_target_length = randint(sparks_area_minlength, sparks_area_maxlength)
 
         # Get the flickering speed of the sparks and the firebase.
@@ -138,7 +134,7 @@ class EffectFireplace(Effect):
             self.sparks_array[:, :sparks_fly_steps][1] = 0
             self.sparks_array[:, :sparks_fly_steps][2] = 0
 
-            self.sparks_current_appear_distance = self.sparks_current_appear_distance + sparks_fly_steps
+            self.sparks_current_appear_distance += sparks_fly_steps
 
             # Reached the target distance.
             if self.sparks_current_appear_distance >= self.sparks_target_appear_distance:
@@ -167,12 +163,9 @@ class EffectFireplace(Effect):
         mask_array = self.get_mask_array(led_count, mask_blur)
 
         overlay_array = np.where(spars_array_cutted != 0, spars_array_cutted, firebase_array)
-        overlay_array = overlay_array * (mask_array / 100)
+        overlay_array *= mask_array / 100
 
-        if blur != 0:
-            output_array = gaussian_filter1d(overlay_array, sigma=blur)
-        else:
-            output_array = overlay_array
+        output_array = gaussian_filter1d(overlay_array, sigma=blur) if blur != 0 else overlay_array
 
         if effect_config["swap_side"]:
             output_array[:, ::] = output_array[:, ::-1]
@@ -183,23 +176,22 @@ class EffectFireplace(Effect):
         # Add the output array to the queue.
         self.queue_output_array_blocking(output_array)
 
-    def get_current_length(self, current_length, steps, target_length):
+    @staticmethod
+    def get_current_length(current_length, steps, target_length) -> int:
 
         if current_length == target_length:
             return current_length
 
         # Increase current length.
         if current_length <= target_length:
-            current_length = current_length + steps
+            current_length += steps
 
             # If new current length is longer than the target, set the target length.
-            if current_length > target_length:
-                current_length = target_length
+            current_length = min(current_length, target_length)
         else:
             # Decrease current length.
-            current_length = current_length - steps
-            if current_length < target_length:
-                current_length = target_length
+            current_length -= steps
+            current_length = max(current_length, target_length)
 
         return current_length
 
@@ -221,13 +213,9 @@ class EffectFireplace(Effect):
         fade_out[2] = np.linspace(50, 0, one_half_spark_area, endpoint=True)
 
         fade_out_end_cut = len(mask_array[0]) - (self.sparks_area_current_length - one_half_spark_area)
-        if fade_out_end_cut < one_half_spark_area:
-            fade_out_end_index = fade_out_end_cut
-        else:
-            fade_out_end_index = one_half_spark_area
+        fade_out_end_index = min(one_half_spark_area, fade_out_end_cut)
 
-        if fade_out_end_index < 0:
-            fade_out_end_index = 0
+        fade_out_end_index = max(fade_out_end_index, 0)
 
         mask_array[0][self.sparks_area_current_length - one_half_spark_area:self.sparks_area_current_length] = fade_out[0][:fade_out_end_index]
         mask_array[1][self.sparks_area_current_length - one_half_spark_area:self.sparks_area_current_length] = fade_out[1][:fade_out_end_index]
@@ -237,30 +225,25 @@ class EffectFireplace(Effect):
             mask_array = gaussian_filter1d(mask_array, sigma=mask_blur)
         return mask_array
 
-    def get_variation_color(self, main_color, color_variation):
+    @staticmethod
+    def get_variation_color(main_color, color_variation) -> list[int]:
         red_min = main_color[0] - color_variation
         red_max = main_color[0] + color_variation
-        if red_min < 0:
-            red_min = 0
+        red_min = max(red_min, 0)
 
-        if red_max > 255:
-            red_max = 255
+        red_max = min(red_max, 255)
 
         green_min = main_color[1] - color_variation
         green_max = main_color[1] + color_variation
-        if green_min < 0:
-            green_min = 0
+        green_min = max(green_min, 0)
 
-        if green_max > 255:
-            green_max = 255
+        green_max = min(green_max, 255)
 
         blue_min = main_color[2] - color_variation
         blue_max = main_color[2] + color_variation
-        if blue_min < 0:
-            blue_min = 0
+        blue_min = max(blue_min, 0)
 
-        if blue_max > 255:
-            blue_max = 255
+        blue_max = min(blue_max, 255)
 
         result_color = [0, 0, 0]
         result_color[0] = randint(red_min, red_max)
@@ -271,20 +254,17 @@ class EffectFireplace(Effect):
 
     def get_firebase_flicker_steps(self, current_speed):
         """Calculate the steps for the rollspeed.
+
         Up to 1 you can adjust the speed very fine. After this, you need to add decades to increase the speed.
         """
         max_counter = 1
         steps = 0
-        self.firebase_flicker_speed_counter = self.firebase_flicker_speed_counter + current_speed
+        self.firebase_flicker_speed_counter += current_speed
 
         if self.firebase_flicker_speed_counter > max_counter:
             self.firebase_flicker_speed_counter = 0
 
-            if (max_counter / current_speed) < 1:
-
-                steps = int(1 / (max_counter / current_speed))
-            else:
-                steps = 1
+            steps = int(1 / (max_counter / current_speed)) if max_counter / current_speed < 1 else 1
 
         else:
             steps = 0
@@ -293,20 +273,17 @@ class EffectFireplace(Effect):
 
     def get_sparks_flicker_steps(self, current_speed):
         """Calculate the steps for the rollspeed.
+
         Up to 1 you can adjust the speed very fine. After this, you need to add decades to increase the speed.
         """
         max_counter = 1
         steps = 0
-        self.sparks_flicker_speed_counter = self.sparks_flicker_speed_counter + current_speed
+        self.sparks_flicker_speed_counter += current_speed
 
         if self.sparks_flicker_speed_counter > max_counter:
             self.sparks_flicker_speed_counter = 0
 
-            if (max_counter / current_speed) < 1:
-
-                steps = int(1 / (max_counter / current_speed))
-            else:
-                steps = 1
+            steps = int(1 / (max_counter / current_speed)) if max_counter / current_speed < 1 else 1
 
         else:
             steps = 0
@@ -315,20 +292,17 @@ class EffectFireplace(Effect):
 
     def get_sparks_fly_steps(self, current_speed):
         """Calculate the steps for the rollspeed.
+
         Up to 1 you can adjust the speed very fine. After this, you need to add decades to increase the speed.
         """
         max_counter = 1
         steps = 0
-        self.sparks_fly_speed_counter = self.sparks_fly_speed_counter + current_speed
+        self.sparks_fly_speed_counter += current_speed
 
         if self.sparks_fly_speed_counter > max_counter:
             self.sparks_fly_speed_counter = 0
 
-            if (max_counter / current_speed) < 1:
-
-                steps = int(1 / (max_counter / current_speed))
-            else:
-                steps = 1
+            steps = int(1 / (max_counter / current_speed)) if max_counter / current_speed < 1 else 1
 
         else:
             steps = 0

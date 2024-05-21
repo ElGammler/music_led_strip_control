@@ -16,7 +16,7 @@ class Effect:
         # Initial config load.
         self._config = self._device.config
         self._config_colours = self._config["colors"]
-        self._config_gradients = {}
+        self._config_gradients = self._config["gradients"]
 
         self._device_config = self._device.device_config
         self._output_queue = self._device.output_queue
@@ -138,16 +138,12 @@ class Effect:
         max_counter = 1
         steps = 0
 
-        self.speed_counter = self.speed_counter + current_speed
+        self.speed_counter += current_speed
 
         if self.speed_counter > max_counter:
             self.speed_counter = 0
 
-            if (max_counter / current_speed) < 1:
-
-                steps = int(1 / (max_counter / current_speed))
-            else:
-                steps = 1
+            steps = int(1 / (max_counter / current_speed)) if max_counter / current_speed < 1 else 1
 
         else:
             steps = 0
@@ -158,9 +154,11 @@ class Effect:
         audio_data = None
         if not self._audio_queue.empty():
             audio_data = self._audio_queue.get_blocking()
+
         return audio_data
 
-    def get_mel(self, audio_data):
+    @staticmethod
+    def get_mel(audio_data):
 
         # Audio Data is empty.
         if (audio_data is None):
@@ -174,7 +172,8 @@ class Effect:
 
         return audio_mel
 
-    def get_vol(self, audio_data):
+    @staticmethod
+    def get_vol(audio_data):
 
         # Audio Data is empty.
         if (audio_data is None):
@@ -197,7 +196,8 @@ class Effect:
     def get_effect_config(self, effect_id):
         return self._device.device_config["effects"][effect_id]
 
-    def mirror_array(self, array, led_mid, led_count):
+    @staticmethod
+    def mirror_array(array, led_mid, led_count):
         # Calculate the real mid
         # |                   |real_mid             |
         # |---------------------------|-------------|
@@ -208,13 +208,12 @@ class Effect:
         # Add some tolerance for the real mid.
         if (real_mid >= led_mid - 2) and (real_mid <= led_mid + 2):
             # Use the option with shrinking the array.
-            mirrored_array = np.concatenate(
-                (array[:, ::-2], array[:, ::2]), axis=1)
-            return mirrored_array
+            return np.concatenate((array[:, ::-2], array[:, ::2]), axis=1)
+
         # Mirror the whole array. After this the array has the double size than led_count.
         big_mirrored_array = np.concatenate(
             (array[:, ::-1], array[:, ::1]), axis=1)
         start_of_array = led_count - led_mid
         end_of_array = start_of_array + led_count
-        mirrored_array = big_mirrored_array[:, start_of_array:end_of_array]
-        return mirrored_array
+
+        return big_mirrored_array[:, start_of_array:end_of_array]
