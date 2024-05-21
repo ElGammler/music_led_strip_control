@@ -17,6 +17,8 @@ ignore = [
     "ANN101",  # missing-type-self
     "ANN201",  # missing-return-type-undocumented-public-function
     "ANN202",  # missing-return-type-private-function
+    "ANN205",  # missing-return-type-static-method
+    "BLE001",  # blind-except
     "COM812",  # missing-trailing-comma
     "CPY001",  # missing-copyright-notice
     "D1",      # undocumented-*
@@ -30,6 +32,7 @@ ignore = [
     "PLR2004", # magic-value-comparison
     "RET503",  # implicit-return
     "RUF029",  # unused-async
+    "S311",    # suspicious-non-cryptographic-random-usage
     "S404",    # suspicious-subprocess-import
     "S602",    # subprocess-popen-with-shell-equals-true
     "S603",    # subprocess-without-shell-equals-true
@@ -55,3 +58,9 @@ inline-quotes = "double"
 max-args = 10
 
 max-returns = 10
+
+max-locals = 15
+
+
+[lint.mccabe]
+max-complexity = 15
