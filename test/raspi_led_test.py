@@ -6,9 +6,10 @@
 # Direct port of the Arduino NeoPixel library strandtest example.  Showcases
 # various animations on a strip of NeoPixels.
 
-from rpi_ws281x import Color, Adafruit_NeoPixel
 import argparse
 import time
+
+from rpi_ws281x import Adafruit_NeoPixel, Color
 
 # LED strip configuration:
 LED_COUNT = 16        # Number of LED pixels.
@@ -22,7 +23,7 @@ LED_CHANNEL = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
 
 # Define functions which animate LEDs in various ways.
-def colorWipe(strip, color, wait_ms=50):
+def color_wipe(strip, color, wait_ms=50):
     """Wipe color across display a pixel at a time."""
     for i in range(strip.numPixels()):
         strip.setPixelColor(i, color)
@@ -30,9 +31,9 @@ def colorWipe(strip, color, wait_ms=50):
         time.sleep(wait_ms / 1000.0)
 
 
-def theaterChase(strip, color, wait_ms=50, iterations=10):
+def theater_chase(strip, color, wait_ms=50, iterations=10):
     """Movie theater light style chaser animation."""
-    for j in range(iterations):
+    for _ in range(iterations):
         for q in range(3):
             for i in range(0, strip.numPixels(), 3):
                 strip.setPixelColor(i + q, color)
@@ -62,7 +63,7 @@ def rainbow(strip, wait_ms=20, iterations=1):
         time.sleep(wait_ms / 1000.0)
 
 
-def rainbowCycle(strip, wait_ms=20, iterations=5):
+def rainbow_cycle(strip, wait_ms=20, iterations=5):
     """Draw rainbow that uniformly distributes itself across all pixels."""
     for j in range(256 * iterations):
         for i in range(strip.numPixels()):
@@ -72,7 +73,7 @@ def rainbowCycle(strip, wait_ms=20, iterations=5):
         time.sleep(wait_ms / 1000.0)
 
 
-def theaterChaseRainbow(strip, wait_ms=50):
+def theater_chase_rainbow(strip, wait_ms=50):
     """Rainbow movie theater light style chaser animation."""
     for j in range(256):
         for q in range(3):
@@ -85,11 +86,11 @@ def theaterChaseRainbow(strip, wait_ms=50):
 
 
 # Main program logic follows:
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Process arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--clear', action='store_true',
-                        help='clear the display on exit')
+    parser.add_argument("-c", "--clear", action="store_true",
+                        help="clear the display on exit")
     args = parser.parse_args()
 
     # Create NeoPixel object with appropriate configuration.
@@ -98,26 +99,26 @@ if __name__ == '__main__':
     # Intialize the library (must be called once before other functions).
     strip.begin()
 
-    print('Press Ctrl-C to quit.')
+    print("Press Ctrl-C to quit.")  # noqa: T201
     if not args.clear:
-        print('Use "-c" argument to clear LEDs on exit')
+        print('Use "-c" argument to clear LEDs on exit')  # noqa: T201
 
     try:
 
         while True:
-            print('Color wipe animations.')
-            colorWipe(strip, Color(255, 0, 0))  # Red wipe
-            colorWipe(strip, Color(0, 255, 0))  # Blue wipe
-            colorWipe(strip, Color(0, 0, 255))  # Green wipe
-            print('Theater chase animations.')
-            theaterChase(strip, Color(127, 127, 127))  # White theater chase
-            theaterChase(strip, Color(127, 0, 0))  # Red theater chase
-            theaterChase(strip, Color(0, 0, 127))  # Blue theater chase
-            print('Rainbow animations.')
+            print("Color wipe animations.")  # noqa: T201
+            color_wipe(strip, Color(255, 0, 0))  # Red wipe
+            color_wipe(strip, Color(0, 255, 0))  # Blue wipe
+            color_wipe(strip, Color(0, 0, 255))  # Green wipe
+            print("Theater chase animations.")  # noqa: T201
+            theater_chase(strip, Color(127, 127, 127))  # White theater chase
+            theater_chase(strip, Color(127, 0, 0))  # Red theater chase
+            theater_chase(strip, Color(0, 0, 127))  # Blue theater chase
+            print("Rainbow animations.")  # noqa: T201
             rainbow(strip)
-            rainbowCycle(strip)
-            theaterChaseRainbow(strip)
+            rainbow_cycle(strip)
+            theater_chase_rainbow(strip)
 
     except KeyboardInterrupt:
         if args.clear:
-            colorWipe(strip, Color(0, 0, 0), 10)
+            color_wipe(strip, Color(0, 0, 0), 10)
