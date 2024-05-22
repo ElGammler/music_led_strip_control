@@ -59,7 +59,7 @@ class AuthenticationExecuter(ExecuterBase):
             "USE_PIN_LOCK": False
         }
         self.config = ConfigParser()
-        self.config_path: str = "../security.ini"
+        self.config_path: Path = Path("../security.ini")
         self.config_values = self.read_config()
         self.USER_PIN: str = self.config_values["DEFAULT_PIN"]
         self.IS_PIN_ACTIVE: bool = self.config_values["USE_PIN_LOCK"]
@@ -112,7 +112,7 @@ class AuthenticationExecuter(ExecuterBase):
 
         logger.debug(f"PIN config: {self.config}, dataset: {dataset}")
 
-        if self.config_path in dataset:
+        if self.config_path.as_posix() in dataset:
             try:
                 new_values: PinConfig = {
                     "DEFAULT_PIN": self.config["SECURITY"].get("DEFAULT_PIN"),
