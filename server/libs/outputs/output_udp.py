@@ -3,7 +3,7 @@ import socket
 import numpy as np
 from loguru import logger
 
-from libs.outputs.output import Output  # pylint: disable=E0611, E0401
+from libs.outputs.output import Output
 
 
 class OutputUDP(Output):

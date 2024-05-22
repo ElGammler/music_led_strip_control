@@ -18,7 +18,7 @@ effect_api = Blueprint("effect_api", __name__)
 @effect_api.get("/api/effect/active")
 @login_required
 @swag_from("docs/effect_api/get_active_effect.yml")
-def get_active_effect():  # pylint: disable=E0211
+def get_active_effect():
     data_in = request.args.to_dict()
 
     if set(data_in) == {"device"}:  # Get the active effect for a specific device.
@@ -44,7 +44,7 @@ def get_active_effect():  # pylint: disable=E0211
 @effect_api.post("/api/effect/active")
 @login_required
 @swag_from("docs/effect_api/set_active_effect.yml")
-def set_active_effect():  # pylint: disable=E0211
+def set_active_effect():
     data_in = request.get_json()
     data_out = {}
 
@@ -82,7 +82,7 @@ def set_active_effect():  # pylint: disable=E0211
 @effect_api.get("/api/effect/cycle-status")
 @login_required
 @swag_from("docs/effect_api/get_cycle_status.yml")
-def get_cycle_status():  # pylint: disable=E0211
+def get_cycle_status():
     data_in = request.args.to_dict()
 
     if not validate_schema(data_in, DEVICE_CYCLE_STATUS_SCHEMA):

@@ -15,7 +15,7 @@ from libs.webserver.blueprints.general_api import general_api
 from libs.webserver.blueprints.general_settings_api import general_settings_api
 from libs.webserver.blueprints.microphone_settings_api import microphone_settings_api
 from libs.webserver.blueprints.system_info_api import system_info_api
-from libs.webserver.executer import Executer  # pylint: disable=E0611, E0401
+from libs.webserver.executer import Executer
 
 # Flask DEBUG switch.
 DEBUG = False

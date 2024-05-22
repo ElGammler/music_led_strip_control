@@ -2,7 +2,7 @@ import random
 
 import numpy as np
 
-from libs.effects.effect import Effect  # pylint: disable=E0611, E0401
+from libs.effects.effect import Effect
 
 
 class EffectPower(Effect):

@@ -4,7 +4,7 @@ from loguru import logger
 
 from libs.effect_service import EffectService
 from libs.output_service import OutputService
-from libs.queue_wrapper import QueueWrapper  # pylint: disable=E0611, E0401
+from libs.queue_wrapper import QueueWrapper
 
 
 class Device:

@@ -6,13 +6,13 @@ import numpy as np
 import pyaudio
 from loguru import logger
 
-from libs.audio_info import AudioInfo  # pylint: disable=E0611, E0401
-from libs.config_service import ConfigService  # pylint: disable=E0611, E0401
-from libs.dsp import DSP  # pylint: disable=E0611, E0401
-from libs.fps_limiter import FPSLimiter  # pylint: disable=E0611, E0401
-from libs.notification_enum import NotificationEnum  # pylint: disable=E0611, E0401
-from libs.notification_item import NotificationItem  # pylint: disable=E0611, E0401
-from libs.queue_wrapper import QueueWrapper  # pylint: disable=E0611, E0401
+from libs.audio_info import AudioInfo
+from libs.config_service import ConfigService
+from libs.dsp import DSP
+from libs.fps_limiter import FPSLimiter
+from libs.notification_enum import NotificationEnum
+from libs.notification_item import NotificationItem
+from libs.queue_wrapper import QueueWrapper
 
 
 class AudioProcessService:

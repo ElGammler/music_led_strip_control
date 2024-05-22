@@ -83,7 +83,7 @@ def logout():
 
 
 @authentication_api.get("/api/auth/pin")
-def get_pin_setting():  # pylint: disable=E0211
+def get_pin_setting():
     """Return PIN code
     ---
     tags:
@@ -117,7 +117,7 @@ def get_pin_setting():  # pylint: disable=E0211
 
 
 @authentication_api.post("/api/auth/pin")
-def set_pin_setting():  # pylint: disable=E0211
+def set_pin_setting():
     """Set PIN code
     ---
     tags:
@@ -166,7 +166,7 @@ def set_pin_setting():  # pylint: disable=E0211
 
 
 @authentication_api.delete("/api/auth/pin")
-def reset_pin_setting():  # pylint: disable=E0211
+def reset_pin_setting():
     """Reset PIN code
     ---
     tags:

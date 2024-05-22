@@ -19,7 +19,7 @@ device_api = Blueprint("device_api", __name__)
 @device_api.get("/api/system/devices")
 @login_required
 @swag_from("docs/device_api/get_devices.yml")
-def get_devices():  # pylint: disable=E0211
+def get_devices():
     data_out = Executer.instance.device_executer.get_devices()
 
     return jsonify(data_out)
@@ -28,7 +28,7 @@ def get_devices():  # pylint: disable=E0211
 @device_api.post("/api/system/devices")
 @login_required
 @swag_from("docs/device_api/create_device.yml")
-def create_device():  # pylint: disable=E0211
+def create_device():
     data_out = Executer.instance.device_executer.create_new_device()
 
     if data_out is DeviceLimitReached:
@@ -40,7 +40,7 @@ def create_device():  # pylint: disable=E0211
 @device_api.delete("/api/system/devices")
 @login_required
 @swag_from("docs/device_api/delete_device.yml")
-def delete_device():  # pylint: disable=E0211
+def delete_device():
     data_in = request.get_json()
 
     if not validate_schema(data_in, DELETE_DEVICE_SCHEMA):
@@ -57,7 +57,7 @@ def delete_device():  # pylint: disable=E0211
 @device_api.get("/api/system/groups")
 @login_required
 @swag_from("docs/device_api/get_groups.yml")
-def get_groups():  # pylint: disable=E0211
+def get_groups():
     data_out = Executer.instance.device_executer.get_groups()
 
     return jsonify(data_out)
@@ -66,7 +66,7 @@ def get_groups():  # pylint: disable=E0211
 @device_api.post("/api/system/groups")
 @login_required
 @swag_from("docs/device_api/create_group.yml")
-def create_group():  # pylint: disable=E0211
+def create_group():
     data_in = request.get_json()
 
     if not validate_schema(data_in, CREATE_GROUP_SCHEMA):
@@ -86,7 +86,7 @@ def create_group():  # pylint: disable=E0211
 @device_api.delete("/api/system/groups")
 @login_required
 @swag_from("docs/device_api/delete_group.yml")
-def delete_group():  # pylint: disable=E0211
+def delete_group():
     data_in = request.get_json()
 
     if not validate_schema(data_in, DELETE_GROUP_SCHEMA):
@@ -103,7 +103,7 @@ def delete_group():  # pylint: disable=E0211
 @device_api.patch("/api/system/groups")
 @login_required
 @swag_from("docs/device_api/remove_invalid_device_groups.yml")
-def remove_invalid_device_groups():  # pylint: disable=E0211
+def remove_invalid_device_groups():
     data_out = Executer.instance.device_executer.remove_invalid_device_groups()
 
     return jsonify(data_out)

@@ -3,7 +3,7 @@ import random
 import numpy as np
 from scipy.ndimage import gaussian_filter1d
 
-from libs.effects.effect import Effect  # pylint: disable=E0611, E0401
+from libs.effects.effect import Effect
 
 
 class EffectTwinkle(Effect):

@@ -15,7 +15,7 @@ general_settings_api = Blueprint("general_settings_api", __name__)
 @general_settings_api.get("/api/settings/general")
 @login_required
 @swag_from("docs/general_settings_api/get_general_settings.yml")
-def get_general_settings():  # pylint: disable=E0211
+def get_general_settings():
     data_in = request.args.to_dict()
 
     if set(data_in) == {"setting_key"}:  # Get one specific general setting.
@@ -39,7 +39,7 @@ def get_general_settings():  # pylint: disable=E0211
 @general_settings_api.post("/api/settings/general")
 @login_required
 @swag_from("docs/general_settings_api/set_general_settings.yml")
-def set_general_settings():  # pylint: disable=E0211
+def set_general_settings():
     data_in = request.get_json()
 
     if not validate_schema(data_in, SET_GENERAL_SETTINGS_SCHEMA):
@@ -53,7 +53,7 @@ def set_general_settings():  # pylint: disable=E0211
 @general_settings_api.delete("/api/settings/general")
 @login_required
 @swag_from("docs/general_settings_api/reset_general_settings.yml")
-def reset_general_settings():  # pylint: disable=E0211
+def reset_general_settings():
     data_out = Executer.instance.general_settings_executer.reset_settings()
 
     return jsonify(data_out)
@@ -62,7 +62,7 @@ def reset_general_settings():  # pylint: disable=E0211
 @general_settings_api.get("/api/settings/configuration/file")
 @login_required
 @swag_from("docs/general_settings_api/export_config.yml")
-def export_config():  # pylint: disable=E0211
+def export_config():
     logger.debug(f"Send file: {Executer.instance.general_settings_executer.export_config_path}")
     return send_file(
         Executer.instance.general_settings_executer.export_config_path,
@@ -75,7 +75,7 @@ def export_config():  # pylint: disable=E0211
 @general_settings_api.post("/api/settings/configuration/file")
 @login_required
 @swag_from("docs/general_settings_api/import_config.yml")
-def import_config():  # pylint: disable=E0211
+def import_config():
     logger.debug("Import Config Request received.")
 
     if "imported_config" not in request.files:

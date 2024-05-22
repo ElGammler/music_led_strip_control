@@ -12,8 +12,8 @@ from shutil import copy, copyfile
 from jsonschema.exceptions import ValidationError
 from loguru import logger
 
-from libs.config_converter.config_converter_service import ConfigConverterService  # pylint: disable=E0611, E0401
-from libs.webserver.schemas.config_validator_service import ConfigValidatorService  # pylint: disable=E0611, E0401
+from libs.config_converter.config_converter_service import ConfigConverterService
+from libs.webserver.schemas.config_validator_service import ConfigValidatorService
 
 
 class ConfigService:

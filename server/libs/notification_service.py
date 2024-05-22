@@ -3,9 +3,9 @@ from time import sleep
 
 from loguru import logger
 
-from libs.notification_enum import NotificationEnum  # pylint: disable=E0611, E0401
-from libs.notification_item import NotificationItem  # pylint: disable=E0611, E0401
-from libs.queue_wrapper import QueueWrapper  # pylint: disable=E0611, E0401
+from libs.notification_enum import NotificationEnum
+from libs.notification_item import NotificationItem
+from libs.queue_wrapper import QueueWrapper
 
 
 class NotificationService:

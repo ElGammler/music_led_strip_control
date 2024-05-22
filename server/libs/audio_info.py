@@ -1,7 +1,7 @@
 
 from loguru import logger
 
-from libs.audio_device import AudioDevice  # pylint: disable=E0611, E0401
+from libs.audio_device import AudioDevice
 
 
 class AudioInfo:

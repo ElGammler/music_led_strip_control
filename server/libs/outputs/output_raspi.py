@@ -1,7 +1,7 @@
 import numpy as np
 from loguru import logger
 
-from libs.outputs.output import Output  # pylint: disable=E0611, E0401
+from libs.outputs.output import Output
 
 
 class OutputRaspi(Output):
@@ -94,9 +94,9 @@ class OutputRaspi(Output):
         # Check if we have a white channel or not.
         if len(output_array[:]) == 4 and "SK6812" in self._led_strip:
             # Sort the colors as RGB type.
-            g = np.left_shift(output_array[1][:].astype(int), 24)  # pylint: disable=assignment-from-no-return
-            r = np.left_shift(output_array[0][:].astype(int), 16)  # pylint: disable=assignment-from-no-return
-            b = np.left_shift(output_array[2][:].astype(int), 8)  # pylint: disable=assignment-from-no-return
+            g = np.left_shift(output_array[1][:].astype(int), 24)
+            r = np.left_shift(output_array[0][:].astype(int), 16)
+            b = np.left_shift(output_array[2][:].astype(int), 8)
             w = output_array[3][:].astype(int)
             grbw = np.bitwise_or(np.bitwise_or(np.bitwise_or(r, g), b), w).astype(int)
 
@@ -105,8 +105,8 @@ class OutputRaspi(Output):
                 ws.ws2811_led_set(self.channel, i, int(grbw[i].item()))
         else:
             # Sort the colors as RGB type.
-            g = np.left_shift(output_array[1][:].astype(int), 16)  # pylint: disable=assignment-from-no-return
-            r = np.left_shift(output_array[0][:].astype(int), 8)  # pylint: disable=assignment-from-no-return
+            g = np.left_shift(output_array[1][:].astype(int), 16)
+            r = np.left_shift(output_array[0][:].astype(int), 8)
             b = output_array[2][:].astype(int)
             grb = np.bitwise_or(np.bitwise_or(r, g), b).astype(int)
 

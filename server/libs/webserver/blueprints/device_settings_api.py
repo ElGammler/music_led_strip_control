@@ -20,7 +20,7 @@ device_settings_api = Blueprint("device_settings_api", __name__)
 @device_settings_api.get("/api/settings/device")
 @login_required
 @swag_from("docs/device_settings_api/get_device_settings.yml")
-def get_device_settings():  # pylint: disable=E0211
+def get_device_settings():
     data_in = request.args.to_dict()
 
     if set(data_in) == {"device"}:  # Get all device settings of one device.
@@ -65,7 +65,7 @@ def get_device_settings():  # pylint: disable=E0211
 @device_settings_api.post("/api/settings/device")
 @login_required
 @swag_from("docs/device_settings_api/set_device_settings.yml")
-def set_device_settings():  # pylint: disable=E0211
+def set_device_settings():
     data_in = request.get_json()
 
     if not validate_schema(data_in, SET_DEVICE_SETTINGS_SCHEMA):
@@ -82,7 +82,7 @@ def set_device_settings():  # pylint: disable=E0211
 @device_settings_api.get("/api/settings/device/output-type")
 @login_required
 @swag_from("docs/device_settings_api/get_output_type_device_settings.yml")
-def get_output_type_device_settings():  # pylint: disable=E0211
+def get_output_type_device_settings():
     data_in = request.args.to_dict()
 
     if set(data_in) == {"device"}:  # Get all output type settings of a device.
@@ -122,7 +122,7 @@ def get_output_type_device_settings():  # pylint: disable=E0211
 @device_settings_api.post("/api/settings/device/output-type")
 @login_required
 @swag_from("docs/device_settings_api/set_output_type_device_settings.yml")
-def set_output_type_device_settings():  # pylint: disable=E0211
+def set_output_type_device_settings():
     data_in = request.get_json()
 
     if not validate_schema(data_in, SET_OUTPUT_SETTINGS_SCHEMA):

@@ -17,7 +17,7 @@ effect_settings_api = Blueprint("effect_settings_api", __name__)
 @effect_settings_api.get("/api/settings/effect")
 @login_required
 @swag_from("docs/effect_settings_api/get_effect_settings.yml")
-def get_effect_settings():  # pylint: disable=E0211
+def get_effect_settings():
     data_in = request.args.to_dict()
 
     if set(data_in) == {"device", "effect", "setting_key"}:  # Get one specific effect setting for a device.
@@ -60,7 +60,7 @@ def get_effect_settings():  # pylint: disable=E0211
 @effect_settings_api.post("/api/settings/effect")
 @login_required
 @swag_from("docs/effect_settings_api/set_effect_settings.yml")
-def set_effect_settings():  # pylint: disable=E0211
+def set_effect_settings():
     data_in = request.get_json()
 
     if set(data_in) == {"device", "effect", "settings"}:  # Set effect settings for a device.
