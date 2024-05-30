@@ -1,7 +1,7 @@
 PyAudio==0.2.14
 numpy==1.26.4
 loguru==0.7.2
-scipy==1.13.0
+scipy==1.13.1
 Werkzeug==3.0.3
 Flask==3.0.3
 Flask_Login==0.6.3
