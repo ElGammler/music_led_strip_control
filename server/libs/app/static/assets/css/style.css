@@ -3150,7 +3150,7 @@ p.text-muted {
   -webkit-animation: anim-rotate 1.5s linear infinite;
           animation: anim-rotate 1.5s linear infinite;
 }
-@media all and (-ms-high-contrast: none) {
+@media all and (forced-colors: none) {
   .menu-styler .style-toggler > a:after {
     line-height: 0.5;
   }
@@ -4537,7 +4537,7 @@ body.box-layout .pcoded-navbar.theme-horizontal ~ .pcoded-header {
   background: #323437 !important;
 }
 
-@media all and (-ms-high-contrast: none) {
+@media all and (forced-colors: none) {
   .pcoded-header .dropdown.show::before {
     line-height: 0.1;
   }
