@@ -16,24 +16,27 @@ class EffectPendulum(Effect):
         self.current_color = [0, 0, 0]
         self.current_color_index = 0
 
+        # Tracks the last position of the pendulum to debounce color changes updates
+        # when `self.current_position` is at the ends (0 or max) for several frames.
+        self.last_position = -1
+
     def run(self):
         # Get the config of the current effect.
         effect_config = self.get_effect_config("effect_pendulum")
         led_count = self._device.device_config["led_count"]
 
-        if self.current_position in {0, led_count - 1}:
+        if self.current_position in {0, led_count - 1} and self.current_position != self.last_position:
             if effect_config["change_color"]:
                 gradient = self._config["gradients"][effect_config["gradient"]]
                 count_colors_in_gradient = len(gradient)
 
-                self.current_color_index += 1
-                if self.current_color_index > count_colors_in_gradient - 1:
-                    self.current_color_index = 0
-
+                self.current_color_index = (self.current_color_index + 1) % count_colors_in_gradient
                 self.current_color = gradient[self.current_color_index]
 
             else:
                 self.current_color = self._color_service.colour(effect_config["color"])
+
+            self.last_position = self.current_position
 
         # Build an empty array.
         output_array = np.zeros((3, self._device.device_config["led_count"]))
