@@ -6,7 +6,7 @@ Werkzeug==2.0.3
 Flask==2.0.3
 Flask_Login==0.5.0
 Jinja2==3.0.1
-waitress==2.1.2
+waitress==3.0.1
 rpi_ws281x==4.3.4
 icmplib==3.0
 flasgger==0.9.5
